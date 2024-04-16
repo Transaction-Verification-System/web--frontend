@@ -1,12 +1,12 @@
 import { TemplateProps } from "@/constants/interface/TemplateProps.interface";
 
 interface AuthTemplateProps extends TemplateProps {
-  // props specific to auth here
+  className?: string;
 }
 
-export default function AuthTemplate({ children }: AuthTemplateProps) {
+export default function AuthTemplate({ children , className }: AuthTemplateProps) {
   return (
-    <div className=" min-h-screen border border-red-500 flex justify-center items-center">
+    <div className={(" min-h-screen flex justify-center items-center ") + className}>
       {children}
     </div>
   );

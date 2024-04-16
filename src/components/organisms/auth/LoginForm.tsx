@@ -5,7 +5,6 @@ import { message } from "antd";
 
 type FieldType = {
   email: string;
-  username: string;
   password: string;
 };
 
@@ -18,7 +17,7 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
 
-const RegisterForm: React.FC = () => {
+const LoginForm: React.FC = () => {
   return (
     <Form
       className=" min-w-96"
@@ -36,17 +35,6 @@ const RegisterForm: React.FC = () => {
         ]}
       >
         <Input placeholder="Email" />
-      </Form.Item>
-
-      <Form.Item<FieldType>
-        name="username"
-        rules={[
-          { required: true, message: "Please input your username!" },
-          { min: 4, message: "Username must be at least 4 characters long" },
-          { max: 20, message: "Username must be at most 20 characters long" },
-        ]}
-      >
-        <Input placeholder="Username" />
       </Form.Item>
 
       <Form.Item<FieldType>
@@ -69,4 +57,4 @@ const RegisterForm: React.FC = () => {
   );
 };
 
-export default RegisterForm;
+export default LoginForm;
