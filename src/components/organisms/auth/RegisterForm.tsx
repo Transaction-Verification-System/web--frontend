@@ -35,7 +35,7 @@ const RegisterForm: React.FC = () => {
           { type: "email", message: "Please enter a valid email!" },
         ]}
       >
-        <Input placeholder="Email" />
+        <Input size="large" placeholder="Email" />
       </Form.Item>
 
       <Form.Item<FieldType>
@@ -46,7 +46,7 @@ const RegisterForm: React.FC = () => {
           { max: 20, message: "Username must be at most 20 characters long" },
         ]}
       >
-        <Input placeholder="Username" />
+        <Input size="large" placeholder="Username" />
       </Form.Item>
 
       <Form.Item<FieldType>
@@ -57,12 +57,16 @@ const RegisterForm: React.FC = () => {
           { max: 20, message: "Password must be at most 20 characters long" },
         ]}
       >
-        <Input.Password placeholder="Password" />
+        <Input.Password size="large" placeholder="Password" />
       </Form.Item>
-
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit">
-          Submit
+      <Form.Item>
+        <Button
+          size="large"
+          type="primary"
+          htmlType="submit"
+          className=" w-full"
+        >
+          Register
         </Button>
       </Form.Item>
     </Form>

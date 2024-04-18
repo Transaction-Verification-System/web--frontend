@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         token: {
           colorPrimary: "#000000",
           colorInfo: "#000000",
-          borderRadius: 10,
+          borderRadius: 8,
           sizeStep: 8,
           fontFamily: "DM-Sans, sans-serif",
         },
