@@ -23,6 +23,7 @@ const RegisterForm: React.FC = () => {
     <Form
       className=" min-w-96"
       name="basic"
+      layout="vertical"
       initialValues={{ remember: true }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}

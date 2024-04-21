@@ -7,7 +7,9 @@ interface AuthTemplateProps extends TemplateProps {
 export default function AuthTemplate({ children }: AuthTemplateProps) {
   return (
     <div className="h-screen overflow-hidden flex justify-center items-center border">
-      <div className=" p-10 flex flex-col gap-10 border rounded-xl">{children}</div>
+      <div className=" p-10 flex flex-col gap-6 border rounded-xl">
+        {children}
+      </div>
     </div>
   );
 }
