@@ -1,24 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import type { FormProps } from "antd";
-import { Button, Form, Input } from "antd";
-import { message } from "antd";
+import { Button, Form, Input, message, notification } from "antd";
+import useRegisterUser from "@/components/hooks/useRegisterUser";
 
-type FieldType = {
+export type RegisterFormFieldType = {
   email: string;
   username: string;
   password: string;
 };
 
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success:", values);
-  message.success("Form values are valid! Api call needs to be made here");
-};
-
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
-
 const RegisterForm: React.FC = () => {
+  const { mutate } = useRegisterUser();
+
+  const onFinish: FormProps<RegisterFormFieldType>["onFinish"] = (values) => {
+    console.log("Success:", values);
+    mutate(values);
+  };
+
+  const onFinishFailed: FormProps<RegisterFormFieldType>["onFinishFailed"] = (
+    errorInfo
+  ) => {
+    console.log("Failed:", errorInfo);
+  };
+
   return (
     <Form
       className=" min-w-96"
@@ -29,7 +33,7 @@ const RegisterForm: React.FC = () => {
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
-      <Form.Item<FieldType>
+      <Form.Item<RegisterFormFieldType>
         name="email"
         rules={[
           { required: true, message: "Please input your email!" },
@@ -39,7 +43,7 @@ const RegisterForm: React.FC = () => {
         <Input size="large" placeholder="Email" />
       </Form.Item>
 
-      <Form.Item<FieldType>
+      <Form.Item<RegisterFormFieldType>
         name="username"
         rules={[
           { required: true, message: "Please input your username!" },
@@ -50,7 +54,7 @@ const RegisterForm: React.FC = () => {
         <Input size="large" placeholder="Username" />
       </Form.Item>
 
-      <Form.Item<FieldType>
+      <Form.Item<RegisterFormFieldType>
         name="password"
         rules={[
           { required: true, message: "Please input your password!" },

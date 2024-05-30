@@ -1,23 +1,27 @@
 import React from "react";
 import type { FormProps } from "antd";
 import { Button, Form, Input } from "antd";
-import { message } from "antd";
+import useLoginUser from "@/components/hooks/auth/useLoginUser";
 
-type FieldType = {
+export type LoginFieldType = {
   email: string;
   password: string;
 };
 
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success:", values);
-  message.success("Form values are valid! Api call needs to be made here");
-};
-
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
-
 const LoginForm: React.FC = () => {
+  const { mutate } = useLoginUser();
+
+  const onFinish: FormProps<LoginFieldType>["onFinish"] = (values) => {
+    console.log("Success:", values);
+    mutate(values);
+  };
+
+  const onFinishFailed: FormProps<LoginFieldType>["onFinishFailed"] = (
+    errorInfo
+  ) => {
+    console.log("Failed:", errorInfo);
+  };
+
   return (
     <Form
       className=" min-w-96"
@@ -28,7 +32,7 @@ const LoginForm: React.FC = () => {
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
-      <Form.Item<FieldType>
+      <Form.Item<LoginFieldType>
         name="email"
         rules={[
           { required: true, message: "Please input your email!" },
@@ -38,7 +42,7 @@ const LoginForm: React.FC = () => {
         <Input size="large" placeholder="Email" />
       </Form.Item>
 
-      <Form.Item<FieldType>
+      <Form.Item<LoginFieldType>
         name="password"
         rules={[
           { required: true, message: "Please input your password!" },
@@ -50,7 +54,12 @@ const LoginForm: React.FC = () => {
       </Form.Item>
 
       <Form.Item>
-        <Button size="large" type="primary" htmlType="submit" className=" w-full">
+        <Button
+          size="large"
+          type="primary"
+          htmlType="submit"
+          className=" w-full"
+        >
           Login
         </Button>
       </Form.Item>
