@@ -8,7 +8,7 @@ export default function useLoginUser() {
   const { error, isSuccess, isPending, mutate } = useMutation({
     mutationKey: ["login"],
     mutationFn: async (data: LoginFieldType) => {
-      return axios.post(`${URL}/login`, data);
+      return axios.post(`${URL}/login/`, data);
     },
   });
 

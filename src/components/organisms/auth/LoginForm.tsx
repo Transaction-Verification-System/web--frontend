@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import type { FormProps } from "antd";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message, notification } from "antd";
 import useLoginUser from "@/components/hooks/auth/useLoginUser";
 
 export type LoginFieldType = {
@@ -9,7 +9,7 @@ export type LoginFieldType = {
 };
 
 const LoginForm: React.FC = () => {
-  const { mutate } = useLoginUser();
+  const { mutate, isPending, isSuccess, error } = useLoginUser();
 
   const onFinish: FormProps<LoginFieldType>["onFinish"] = (values) => {
     console.log("Success:", values);
@@ -21,6 +21,27 @@ const LoginForm: React.FC = () => {
   ) => {
     console.log("Failed:", errorInfo);
   };
+
+  useEffect(() => {
+    if (isPending) {
+      message.loading({ content: "Loading...", key: "register" });
+    }
+
+    if (isSuccess) {
+      message.success({
+        content: "User registered successfully!",
+        key: "register",
+      });
+    }
+
+    if (error) {
+      notification.error({
+        message: "Error",
+        description: error.message,
+        key: "register",
+      });
+    }
+  }, [isPending, isSuccess , error]);
 
   return (
     <Form

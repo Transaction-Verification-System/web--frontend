@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import type { FormProps } from "antd";
 import { Button, Form, Input, message, notification } from "antd";
-import useRegisterUser from "@/components/hooks/useRegisterUser";
+import useRegisterUser from "@/components/hooks/auth/useRegisterUser";
 
 export type RegisterFormFieldType = {
   email: string;
@@ -10,7 +10,7 @@ export type RegisterFormFieldType = {
 };
 
 const RegisterForm: React.FC = () => {
-  const { mutate } = useRegisterUser();
+  const { mutate, isPending, isSuccess , error } = useRegisterUser();
 
   const onFinish: FormProps<RegisterFormFieldType>["onFinish"] = (values) => {
     console.log("Success:", values);
@@ -23,6 +23,28 @@ const RegisterForm: React.FC = () => {
     console.log("Failed:", errorInfo);
   };
 
+  useEffect(() => {
+    if (isPending) {
+      message.loading({ content: "Loading...", key: "register" });
+    }
+
+    if (isSuccess) {
+      message.success({
+        content: "User registered successfully!",
+        key: "register",
+      });
+    }
+
+    if(error){
+      notification.error({
+        message: "Error",
+        description: error.message,
+        key: "register"
+      });
+    }
+
+  }, [isPending, isSuccess , error]);
+
   return (
     <Form
       className=" min-w-96"
@@ -34,16 +56,6 @@ const RegisterForm: React.FC = () => {
       autoComplete="off"
     >
       <Form.Item<RegisterFormFieldType>
-        name="email"
-        rules={[
-          { required: true, message: "Please input your email!" },
-          { type: "email", message: "Please enter a valid email!" },
-        ]}
-      >
-        <Input size="large" placeholder="Email" />
-      </Form.Item>
-
-      <Form.Item<RegisterFormFieldType>
         name="username"
         rules={[
           { required: true, message: "Please input your username!" },
@@ -52,6 +64,16 @@ const RegisterForm: React.FC = () => {
         ]}
       >
         <Input size="large" placeholder="Username" />
+      </Form.Item>
+
+      <Form.Item<RegisterFormFieldType>
+        name="email"
+        rules={[
+          { required: true, message: "Please input your email!" },
+          { type: "email", message: "Please enter a valid email!" },
+        ]}
+      >
+        <Input size="large" placeholder="Email" />
       </Form.Item>
 
       <Form.Item<RegisterFormFieldType>
