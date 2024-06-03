@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function RegisterPage() {
   return (
     <AuthTemplate>
-      <p>register here</p>
+      <p className=" text-2xl font-semibold">Register</p>
       <RegisterForm />
       <div className="text-lg text-center text-blue-700">
         <span className="text-slate-700">Already have an account? </span>

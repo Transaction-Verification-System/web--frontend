@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function LoginPage() {
   return (
     <AuthTemplate>
-      <p>login here</p>
+      <p className=" text-2xl font-semibold">Login</p>
       <LoginForm />
       <div className="text-lg text-center text-blue-700">
         <span className="text-slate-700">Don't have an account? </span>
