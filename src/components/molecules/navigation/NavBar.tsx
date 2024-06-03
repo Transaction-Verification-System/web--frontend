@@ -16,7 +16,7 @@ export default function NavBar() {
 
   return (
     <div className=" flex justify-between items-center">
-      <p>Transaction Verification System</p>
+      <Link to={"/"}>Transaction Verification System</Link>
 
       {/* for devices larger than or md */}
       <div className="hidden md:flex">

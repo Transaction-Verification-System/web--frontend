@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import type { FormProps } from "antd";
-import { Button, Form, Input, message, notification } from "antd";
+import { Button, Form, Input, message } from "antd";
 import useRegisterUser from "@/components/hooks/auth/useRegisterUser";
 
 export type RegisterFormFieldType = {
@@ -36,11 +36,7 @@ const RegisterForm: React.FC = () => {
     }
 
     if(error){
-      notification.error({
-        message: "Error",
-        description: error.message,
-        key: "register"
-      });
+      message.error({ content: error.message, key: "register" });
     }
 
   }, [isPending, isSuccess , error]);

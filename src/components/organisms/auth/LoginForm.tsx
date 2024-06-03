@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import type { FormProps } from "antd";
-import { Button, Form, Input, message, notification } from "antd";
+import { Button, Form, Input, message } from "antd";
 import useLoginUser from "@/components/hooks/auth/useLoginUser";
 
 export type LoginFieldType = {
@@ -35,13 +35,9 @@ const LoginForm: React.FC = () => {
     }
 
     if (error) {
-      notification.error({
-        message: "Error",
-        description: error.message,
-        key: "register",
-      });
+      message.error({ content: error.message, key: "register" });
     }
-  }, [isPending, isSuccess , error]);
+  }, [isPending, isSuccess, error]);
 
   return (
     <Form
