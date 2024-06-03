@@ -23,6 +23,7 @@ export default function NavBar() {
         <Links />
       </div>
 
+      {/* for smaller devices */}
       <div className="flex md:hidden">
         <Button onClick={openDrawer} type={"link"}>
           <MenuOutlined />

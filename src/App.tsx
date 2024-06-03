@@ -1,20 +1,18 @@
-import NavBar from "@/components/molecules/navigation/NavBar";
 import { Button } from "antd";
 import { Link } from "react-router-dom";
+import RootTemplate from "@/components/templates/root/RootTemplate";
 
 const App = () => (
-  <div className=" p-5 flex flex-col gap-16">
-    <NavBar />
+  <RootTemplate>
     <LandingActionSection />
-  </div>
+  </RootTemplate>
 );
 
 const LandingActionSection = () => {
   return (
     <div className="flex justify-center items-center flex-col">
       <div className="text-center">
-        Web-service to verify and validate online transactions in real
-        time.
+        Web-service to verify and validate online transactions in real time.
       </div>
 
       <div className=" h-1/2 p-10 flex gap-5 ">
