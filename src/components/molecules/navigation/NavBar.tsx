@@ -2,6 +2,7 @@ import { Button, Drawer } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MenuOutlined } from "@ant-design/icons";
+import Localstore from "@/config/localstore";
 
 export default function NavBar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -41,6 +42,13 @@ export default function NavBar() {
 }
 
 const Links = () => {
+  const token = Localstore.getAccessToken();
+
+  const logout = () => {
+    Localstore.removeAccessToken();
+    window.location.reload();
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-6 md:items-center">
       <a
@@ -53,6 +61,8 @@ const Links = () => {
       <Link to={"#"} className=" hover:underline">
         Documentation
       </Link>
+
+      {token && <Button onClick={logout}>Logout</Button>}
     </div>
   );
 };

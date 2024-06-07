@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "@/assets/styles/index.css";
 import { RouterProvider } from "react-router-dom";
@@ -10,22 +9,20 @@ import { ConfigProvider } from "antd";
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#000000",
-          colorInfo: "#000000",
-          borderRadius: 8,
-          sizeStep: 8,
-          fontFamily: "DM-Sans, sans-serif",
-        },
-      }}
-    >
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <ReactQueryDevtools />
-      </QueryClientProvider>
-    </ConfigProvider>
-  </React.StrictMode>
+  <ConfigProvider
+    theme={{
+      token: {
+        colorPrimary: "#000000",
+        colorInfo: "#000000",
+        borderRadius: 8,
+        sizeStep: 8,
+        fontFamily: "DM-Sans, sans-serif",
+      },
+    }}
+  >
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <ReactQueryDevtools />
+    </QueryClientProvider>
+  </ConfigProvider>
 );

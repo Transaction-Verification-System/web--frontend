@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import type { FormProps } from "antd";
 import { Button, Form, Input, message } from "antd";
 import useLoginUser from "@/components/hooks/auth/useLoginUser";
+import Localstore from "@/config/localstore";
+import { useNavigate } from "react-router-dom";
 
 export type LoginFieldType = {
   email: string;
@@ -9,7 +11,8 @@ export type LoginFieldType = {
 };
 
 const LoginForm: React.FC = () => {
-  const { mutate, isPending, isSuccess, error } = useLoginUser();
+  const { mutate, isPending, isSuccess, error, data } = useLoginUser();
+  const navigate = useNavigate();
 
   const onFinish: FormProps<LoginFieldType>["onFinish"] = (values) => {
     console.log("Success:", values);
@@ -29,15 +32,19 @@ const LoginForm: React.FC = () => {
 
     if (isSuccess) {
       message.success({
-        content: "User registered successfully!",
+        content: "Login Successfull!",
         key: "register",
       });
+
+      Localstore.setAccessToken(data?.data.token as string);
+
+      navigate("/dashboard");
     }
 
     if (error) {
       message.error({ content: error.message, key: "register" });
     }
-  }, [isPending, isSuccess, error]);
+  }, [isPending, isSuccess, error, data , navigate]);
 
   return (
     <Form
