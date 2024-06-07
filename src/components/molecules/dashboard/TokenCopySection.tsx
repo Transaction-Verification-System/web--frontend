@@ -1,4 +1,4 @@
-import { Input, message } from "antd";
+import { Input, Tooltip, message } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 
 /**
@@ -27,12 +27,14 @@ const TokenCopySection = () => {
           disabled
         />
 
-        <span
-          onClick={copyLink}
-          className=" absolute cursor-pointer top-0 rounded-r-lg right-0 w-1/12 h-full border bg-white flex justify-center items-center"
-        >
-          <CopyOutlined />
-        </span>
+        <Tooltip title="Copy Token">
+          <span
+            onClick={copyLink}
+            className=" absolute cursor-pointer top-0 rounded-r-lg right-0 w-1/12 h-full border bg-white flex justify-center items-center"
+          >
+            <CopyOutlined />
+          </span>
+        </Tooltip>
       </div>
     </div>
   );
