@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import type { FormProps } from "antd";
 import { Button, Form, Input, message } from "antd";
 import useRegisterUser from "@/components/hooks/auth/useRegisterUser";
+import { useNavigate } from "react-router-dom";
 
 export type RegisterFormFieldType = {
   email: string;
@@ -10,8 +11,8 @@ export type RegisterFormFieldType = {
 };
 
 const RegisterForm: React.FC = () => {
-  const { mutate, isPending, isSuccess , error } = useRegisterUser();
-
+  const { mutate, isPending, isSuccess, error } = useRegisterUser();
+  const navigate = useNavigate();
   const onFinish: FormProps<RegisterFormFieldType>["onFinish"] = (values) => {
     console.log("Success:", values);
     mutate(values);
@@ -33,13 +34,13 @@ const RegisterForm: React.FC = () => {
         content: "User registered successfully!",
         key: "register",
       });
+      navigate("/login");
     }
 
-    if(error){
+    if (error) {
       message.error({ content: error.message, key: "register" });
     }
-
-  }, [isPending, isSuccess , error]);
+  }, [isPending, isSuccess, error, navigate]);
 
   return (
     <Form
