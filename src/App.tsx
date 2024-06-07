@@ -9,6 +9,7 @@ const App = () => (
 );
 
 const LandingActionSection = () => {
+  
   return (
     <div className="flex justify-center items-center flex-col">
       <div className="text-center">
