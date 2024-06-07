@@ -1,7 +1,17 @@
 import { LoadingOutlined } from "@ant-design/icons";
 import { Timeline } from "antd";
 
-const TimelineRecorder = () => {
+/**
+ *-----------------------------------------------------------------------------
+ * @returns TimeLineObserver component
+ *
+ * @description
+ * displays a timeline observer
+ * that shows the current transaction ID
+ * and the steps of the transaction observer
+ *-----------------------------------------------------------------------------
+ */
+const TimeLineObserver = () => {
   return (
     <div className="flex flex-col gap-5 p-10 border-l">
       <span className="text-sm border rounded-md p-2 bg-gray-100">
@@ -35,4 +45,4 @@ const TimelineRecorder = () => {
   );
 };
 
-export default TimelineRecorder;
+export default TimeLineObserver;

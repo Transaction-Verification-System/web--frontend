@@ -5,6 +5,15 @@ interface AuthTemplateProps extends TemplateProps {
   className?: string;
 }
 
+/**
+ *-----------------------------------------------------------------------------
+ * @returns AuthTemplate component
+ *
+ * @description
+ * displays the authentication template
+ * that wraps the children components
+ *-----------------------------------------------------------------------------
+ */
 export default function AuthTemplate({ children }: AuthTemplateProps) {
   return (
     <RootTemplate>

@@ -1,7 +1,16 @@
 import { Input, message } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 
-const ApiTokenSection = () => {
+/**
+ *-----------------------------------------------------------------------------
+ * @returns TokenCopySection component
+ *
+ * @description
+ * displays a token copy section
+ * with a copy button that copies the token to the clipboard
+ *-----------------------------------------------------------------------------
+ */
+const TokenCopySection = () => {
   const clipboardContent = "123456";
 
   const copyLink = () => {
@@ -29,4 +38,4 @@ const ApiTokenSection = () => {
   );
 };
 
-export default ApiTokenSection;
+export default TokenCopySection;

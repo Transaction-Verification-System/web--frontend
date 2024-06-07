@@ -2,8 +2,17 @@ import LoginForm from "@/components/organisms/auth/LoginForm";
 import AuthTemplate from "@/components/templates/auth/AuthTemplate";
 import { Link } from "react-router-dom";
 
-export default function LoginPage() {
 
+/**
+ *-----------------------------------------------------------------------------
+ * @returns LoginPage component
+ *
+ * @description
+ * displays the login page
+ * with the login form
+ *-----------------------------------------------------------------------------
+ */
+export default function LoginPage() {
   return (
     <AuthTemplate>
       <p className=" text-2xl font-semibold">Login</p>

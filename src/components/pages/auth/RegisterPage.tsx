@@ -2,6 +2,16 @@ import RegisterForm from "@/components/organisms/auth/RegisterForm";
 import AuthTemplate from "@/components/templates/auth/AuthTemplate";
 import { Link } from "react-router-dom";
 
+
+/**
+ *-----------------------------------------------------------------------------
+ * @returns RegisterPage component
+ *
+ * @description
+ * displays the register page
+ * with the register form
+ *-----------------------------------------------------------------------------
+ */
 export default function RegisterPage() {
   return (
     <AuthTemplate>
