@@ -1,6 +1,7 @@
 import App from "@/App";
 import LoginPage from "@/components/pages/auth/LoginPage";
 import RegisterPage from "@/components/pages/auth/RegisterPage";
+import DashboardPage from "@/components/pages/dashboard/DashboardPage";
 import AuthProvider from "@/providers/AuthProvider";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
@@ -23,7 +24,7 @@ const routes: RouteObject[] = [
   },
   {
     path: "/dashboard",
-    element: <AuthProvider>This is Protected Route</AuthProvider>,
+    element: <AuthProvider><DashboardPage/></AuthProvider>,
   },
 ];
 
