@@ -58,8 +58,8 @@ const Links = () => {
       >
         Github
       </a>
-      <Link to={"#"} className=" hover:underline">
-        Documentation
+      <Link to={"/dashboard"} className=" hover:underline">
+        Dashboard
       </Link>
 
       {token && <Button onClick={logout}>Logout</Button>}
