@@ -1,4 +1,3 @@
-
 import { Input, message } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 
@@ -11,7 +10,7 @@ const ApiTokenSection = () => {
   };
 
   return (
-    <div className=" border rounded-md min-h-64 flex justify-center items-center p-10 ">
+    <div className=" border rounded-md min-h-48 flex justify-center items-center p-10 ">
       <div className="relative w-1/2 p-0">
         <Input
           value={`API Token: ${clipboardContent}`}

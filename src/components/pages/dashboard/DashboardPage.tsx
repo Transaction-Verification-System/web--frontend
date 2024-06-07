@@ -6,8 +6,8 @@ export default function DashboardPage() {
   return (
     <RootTemplate>
       <ApiTokenSection />
-      <div className=" flex justify-end items-center border py-10">
-      <TimelineRecorder />
+      <div className=" flex justify-end items-center border rounded-md ">
+        <TimelineRecorder />
       </div>
     </RootTemplate>
   );
