@@ -47,22 +47,28 @@ const Links = () => {
   const logout = () => {
     Localstore.removeAccessToken();
     window.location.reload();
+
   };
 
   return (
     <div className="flex flex-col md:flex-row gap-6 md:items-center">
-      <a
-        target="_blank"
-        className=" hover:underline"
-        href={"https://github.com/Transaction-Verification-System"}
-      >
-        Github
-      </a>
       <Link to={"/dashboard"} className=" hover:underline">
         Dashboard
       </Link>
 
-      {token && <Button onClick={logout}>Logout</Button>}
+      {token && (
+        <>
+          <Link to={"/profile"} className=" hover:underline">
+            Insights
+          </Link>
+
+          <Link to={"/transactions"} className=" hover:underline">
+            Transactions History
+          </Link>
+
+          <Button onClick={logout}>Logout</Button>
+        </>
+      )}
     </div>
   );
 };

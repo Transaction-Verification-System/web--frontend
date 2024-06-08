@@ -1,6 +1,5 @@
 import NavBar from "@/components/molecules/navigation/NavBar";
 
-
 /**
  *-----------------------------------------------------------------------------
  * @returns RootTemplate component
@@ -17,7 +16,7 @@ export default function RootTemplate({
   children: React.ReactNode;
 }) {
   return (
-    <div className=" p-5 flex flex-col gap-10">
+    <div className=" p-5 flex flex-col gap-10 ">
       <NavBar />
       {children}
     </div>

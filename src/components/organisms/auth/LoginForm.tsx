@@ -32,7 +32,7 @@ const LoginForm: React.FC = () => {
 
     if (isSuccess) {
       message.success({
-        content: "Login Successfull!",
+        content: "Login Successful!",
         key: "register",
       });
 
@@ -44,11 +44,11 @@ const LoginForm: React.FC = () => {
     if (error) {
       message.error({ content: error.message, key: "register" });
     }
-  }, [isPending, isSuccess, error, data , navigate]);
+  }, [isPending, isSuccess, error, data, navigate]);
 
   return (
     <Form
-      className=" min-w-96"
+      className="min-w-full sm:min-w-96 px-4 py-6 sm:px-8"
       name="basic"
       layout="vertical"
       initialValues={{ remember: true }}
@@ -63,7 +63,7 @@ const LoginForm: React.FC = () => {
           { type: "email", message: "Please enter a valid email!" },
         ]}
       >
-        <Input size="large" placeholder="Email" />
+        <Input size="large" placeholder="Email" className="w-full" />
       </Form.Item>
 
       <Form.Item<LoginFieldType>
@@ -74,7 +74,7 @@ const LoginForm: React.FC = () => {
           { max: 20, message: "Password must be at most 20 characters long" },
         ]}
       >
-        <Input.Password size="large" placeholder="Password" />
+        <Input.Password size="large" placeholder="Password" className="w-full" />
       </Form.Item>
 
       <Form.Item>
@@ -82,7 +82,7 @@ const LoginForm: React.FC = () => {
           size="large"
           type="primary"
           htmlType="submit"
-          className=" w-full"
+          className="w-full"
         >
           Login
         </Button>

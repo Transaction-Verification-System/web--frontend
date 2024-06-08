@@ -13,6 +13,7 @@ export type RegisterFormFieldType = {
 const RegisterForm: React.FC = () => {
   const { mutate, isPending, isSuccess, error } = useRegisterUser();
   const navigate = useNavigate();
+
   const onFinish: FormProps<RegisterFormFieldType>["onFinish"] = (values) => {
     console.log("Success:", values);
     mutate(values);
@@ -44,7 +45,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <Form
-      className=" min-w-96"
+      className="min-w-full sm:min-w-96 px-4 py-6 sm:px-8"
       name="basic"
       layout="vertical"
       initialValues={{ remember: true }}
@@ -60,7 +61,7 @@ const RegisterForm: React.FC = () => {
           { max: 20, message: "Username must be at most 20 characters long" },
         ]}
       >
-        <Input size="large" placeholder="Username" />
+        <Input size="large" placeholder="Username" className="w-full" />
       </Form.Item>
 
       <Form.Item<RegisterFormFieldType>
@@ -70,7 +71,7 @@ const RegisterForm: React.FC = () => {
           { type: "email", message: "Please enter a valid email!" },
         ]}
       >
-        <Input size="large" placeholder="Email" />
+        <Input size="large" placeholder="Email" className="w-full" />
       </Form.Item>
 
       <Form.Item<RegisterFormFieldType>
@@ -81,14 +82,15 @@ const RegisterForm: React.FC = () => {
           { max: 20, message: "Password must be at most 20 characters long" },
         ]}
       >
-        <Input.Password size="large" placeholder="Password" />
+        <Input.Password size="large" placeholder="Password" className="w-full" />
       </Form.Item>
+      
       <Form.Item>
         <Button
           size="large"
           type="primary"
           htmlType="submit"
-          className=" w-full"
+          className="w-full"
         >
           Register
         </Button>
