@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MenuOutlined } from "@ant-design/icons";
 import Localstore from "@/config/localstore";
+import useLogoutUser from "@/components/hooks/auth/useLogoutUser";
 
 export default function NavBar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -43,11 +44,7 @@ export default function NavBar() {
 
 const Links = () => {
   const token = Localstore.getAccessToken();
-
-  const logout = () => {
-    // WORK TO DO HERE
-    Localstore.removeAccessToken();
-  };
+  const { logout } = useLogoutUser();
 
   return (
     <div className="flex flex-col md:flex-row gap-6 md:items-center">

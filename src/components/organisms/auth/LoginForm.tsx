@@ -35,9 +35,7 @@ const LoginForm: React.FC = () => {
         content: "Login Successful!",
         key: "register",
       });
-
-      Localstore.setAccessToken(data?.data.token as string);
-
+      Localstore.setAccessToken(data?.data?.['api-token'] as string);
       navigate("/dashboard");
     }
 

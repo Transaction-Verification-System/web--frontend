@@ -1,5 +1,6 @@
 import { Input, Tooltip, message } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
+import Localstore from "@/config/localstore";
 
 /**
  *-----------------------------------------------------------------------------
@@ -11,7 +12,7 @@ import { CopyOutlined } from "@ant-design/icons";
  *-----------------------------------------------------------------------------
  */
 const TokenCopySection = () => {
-  const clipboardContent = "123456";
+  const clipboardContent = Localstore.getAccessToken() as string;
 
   const copyLink = () => {
     navigator.clipboard.writeText(clipboardContent);
@@ -23,7 +24,7 @@ const TokenCopySection = () => {
       <div className="relative w-1/2 p-0">
         <Input
           value={`API Token: ${clipboardContent}`}
-          className=" w-full hover:cursor-default disabled:text-black"
+          className=" w-full hover:cursor-default disabled:text-black font-mono"
           disabled
         />
 
