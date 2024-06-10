@@ -45,9 +45,8 @@ const Links = () => {
   const token = Localstore.getAccessToken();
 
   const logout = () => {
+    // WORK TO DO HERE
     Localstore.removeAccessToken();
-    window.location.reload();
-
   };
 
   return (
