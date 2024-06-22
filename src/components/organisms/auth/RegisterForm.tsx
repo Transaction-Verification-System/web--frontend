@@ -3,6 +3,8 @@ import type { FormProps } from "antd";
 import { Button, Form, Input, message } from "antd";
 import useRegisterUser from "@/components/hooks/auth/useRegisterUser";
 import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
+import displayError from "@/utils/displayError";
 
 export type RegisterFormFieldType = {
   email: string;
@@ -39,7 +41,9 @@ const RegisterForm: React.FC = () => {
     }
 
     if (error) {
-      message.error({ content: error.message, key: "register" });
+      if (error) {
+        displayError(error as AxiosError, "register")
+      }     
     }
   }, [isPending, isSuccess, error, navigate]);
 

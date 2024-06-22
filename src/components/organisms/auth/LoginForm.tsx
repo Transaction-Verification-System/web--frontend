@@ -4,6 +4,8 @@ import { Button, Form, Input, message } from "antd";
 import useLoginUser from "@/components/hooks/auth/useLoginUser";
 import Localstore from "@/config/localstore";
 import { useNavigate } from "react-router-dom";
+import displayError from "@/utils/displayError";
+import { AxiosError } from "axios";
 
 export type LoginFieldType = {
   email: string;
@@ -27,7 +29,7 @@ const LoginForm: React.FC = () => {
 
   useEffect(() => {
     if (isPending) {
-      message.loading({ content: "Loading...", key: "register" });
+      message.loading({ content: "Loading...", key: "login" });
     }
 
     if (isSuccess) {
@@ -35,12 +37,18 @@ const LoginForm: React.FC = () => {
         content: "Login Successful!",
         key: "register",
       });
-      Localstore.setAccessToken(data?.data?.['api-token'] as string);
+
+      message.success({
+        content: "Login Successful!",
+        key: "register",
+      });
+
+      Localstore.setAccessToken(data?.data?.["access-token"] as string);
       navigate("/dashboard");
     }
 
     if (error) {
-      message.error({ content: error.message, key: "register" });
+      displayError(error as AxiosError, "login")
     }
   }, [isPending, isSuccess, error, data, navigate]);
 
@@ -72,7 +80,11 @@ const LoginForm: React.FC = () => {
           { max: 20, message: "Password must be at most 20 characters long" },
         ]}
       >
-        <Input.Password size="large" placeholder="Password" className="w-full" />
+        <Input.Password
+          size="large"
+          placeholder="Password"
+          className="w-full"
+        />
       </Form.Item>
 
       <Form.Item>
