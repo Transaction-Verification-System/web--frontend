@@ -1,20 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { Spin, Alert } from "antd";
-
-const URL = import.meta.env.VITE_API_URL;
+import { Skeleton, Alert } from "antd";
+import axiosInstance from "@/utils/axiosInstance";
 
 export default function TransactionsHistoryPage() {
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ["transactions"],
     queryFn: async () => {
-      const response = await axios.get(`${URL}/transaction/`);
+      const response = await axiosInstance.get(`/history/`);
       return response.data;
     },
   });
 
   if (isLoading) {
-    return <Spin tip="Loading transactions..." />;
+    return (
+      <div style={{ padding: "20px" }}>
+        <Skeleton active paragraph={{ rows: 4 }} />
+      </div>
+    );
   }
 
   if (isError) {

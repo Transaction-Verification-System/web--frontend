@@ -2,7 +2,8 @@ import App from "@/App";
 import LoginPage from "@/components/pages/auth/LoginPage";
 import RegisterPage from "@/components/pages/auth/RegisterPage";
 import DashboardPage from "@/components/pages/dashboard/DashboardPage";
-import TransactionsHistoryPage from "@/components/pages/historyPage/HistoryPage";
+import InsightsPage from "@/components/pages/insights/InsightsPage";
+import TransactionsHistoryPage from "@/components/pages/transactions/TransactionsHistoryPage";
 import AuthProvider from "@/providers/AuthProvider";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
@@ -36,6 +37,14 @@ const routes: RouteObject[] = [
     element: (
       <AuthProvider>
         <TransactionsHistoryPage />
+      </AuthProvider>
+    ),
+  },
+  {
+    path: "/insights",
+    element: (
+      <AuthProvider>
+        <InsightsPage/>
       </AuthProvider>
     ),
   },

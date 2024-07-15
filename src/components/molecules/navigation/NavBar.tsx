@@ -17,23 +17,25 @@ export default function NavBar() {
   };
 
   return (
-    <div className=" flex justify-between items-center">
-      <Link to={"/"}>Transaction Verification System</Link>
+    <div className="flex justify-between items-center p-4">
+      <Link to="/" className="text-lg font-bold">
+        Transaction Verification System
+      </Link>
 
-      {/* for devices larger than or md */}
+      {/* For devices larger than md */}
       <div className="hidden md:flex">
         <Links />
       </div>
 
-      {/* for smaller devices */}
+      {/* For smaller devices */}
       <div className="flex md:hidden">
-        <Button onClick={openDrawer} type={"link"}>
+        <Button onClick={openDrawer} type="link">
           <MenuOutlined />
         </Button>
         <Drawer
           onClose={closeDrawer}
           open={isDrawerOpen}
-          className=" flex flex-col gap-5 justify-center"
+          className="flex flex-col gap-5 justify-center"
         >
           <Links />
         </Drawer>
@@ -48,21 +50,30 @@ const Links = () => {
 
   return (
     <div className="flex flex-col md:flex-row gap-6 md:items-center">
-      <Link to={"/dashboard"} className=" hover:underline">
-        Dashboard
-      </Link>
-
-      {token && (
+      {token ? (
         <>
-          <Link to={"/profile"} className=" hover:underline">
+          <Link to="/dashboard" className="hover:underline">
+            Live Dashboard
+
+          </Link>
+          <Link to="/insights" className="hover:underline">
             Insights
           </Link>
-
-          <Link to={"/transactions"} className=" hover:underline">
+          <Link to="/transactions" className="hover:underline">
             Transactions History
           </Link>
-
-          <Button onClick={logout}>Logout</Button>
+          <Button onClick={logout} type="link">
+            Logout
+          </Button>
+        </>
+      ) : (
+        <>
+          <Link to="/login" className="hover:underline">
+            Login
+          </Link>
+          <Link to="/register" className="hover:underline">
+            Signup
+          </Link>
         </>
       )}
     </div>

@@ -4,8 +4,6 @@ import { Button, Form, Input, message } from "antd";
 import useLoginUser from "@/components/hooks/auth/useLoginUser";
 import Localstore from "@/config/localstore";
 import { useNavigate } from "react-router-dom";
-import displayError from "@/utils/displayError";
-import { AxiosError } from "axios";
 
 export type LoginFieldType = {
   email: string;
@@ -38,13 +36,12 @@ const LoginForm: React.FC = () => {
         key: "register",
       });
 
-      Localstore.setAccessToken(data?.data?.["access-token"] as string);
+      Localstore.setAccessToken(data?.data?.["api-token"] as string);
       navigate("/dashboard");
-    }
 
-    // if (error) {
-    //   displayError(error as AxiosError, "login");
-    // }
+      window.location.reload();
+    }
+ 
   }, [isPending, isSuccess, error, data, navigate]);
 
   return (
