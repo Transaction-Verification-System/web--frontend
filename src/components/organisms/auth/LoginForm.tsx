@@ -38,18 +38,13 @@ const LoginForm: React.FC = () => {
         key: "register",
       });
 
-      message.success({
-        content: "Login Successful!",
-        key: "register",
-      });
-
       Localstore.setAccessToken(data?.data?.["access-token"] as string);
       navigate("/dashboard");
     }
 
-    if (error) {
-      displayError(error as AxiosError, "login")
-    }
+    // if (error) {
+    //   displayError(error as AxiosError, "login");
+    // }
   }, [isPending, isSuccess, error, data, navigate]);
 
   return (
