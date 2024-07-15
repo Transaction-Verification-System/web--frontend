@@ -2,6 +2,7 @@ import App from "@/App";
 import LoginPage from "@/components/pages/auth/LoginPage";
 import RegisterPage from "@/components/pages/auth/RegisterPage";
 import DashboardPage from "@/components/pages/dashboard/DashboardPage";
+import TransactionsHistoryPage from "@/components/pages/historyPage/HistoryPage";
 import AuthProvider from "@/providers/AuthProvider";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
@@ -24,7 +25,19 @@ const routes: RouteObject[] = [
   },
   {
     path: "/dashboard",
-    element: <AuthProvider><DashboardPage/></AuthProvider>,
+    element: (
+      <AuthProvider>
+        <DashboardPage />
+      </AuthProvider>
+    ),
+  },
+  {
+    path: "/transactions",
+    element: (
+      <AuthProvider>
+        <TransactionsHistoryPage />
+      </AuthProvider>
+    ),
   },
 ];
 

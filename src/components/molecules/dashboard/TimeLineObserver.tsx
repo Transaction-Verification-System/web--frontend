@@ -1,27 +1,43 @@
-import { LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import { Timeline } from "antd";
 
-/**
- *-----------------------------------------------------------------------------
- * @returns TimeLineObserver component
- *
- * @description
- * displays a timeline observer
- * that shows the current transaction ID
- * and the steps of the transaction observer
- *-----------------------------------------------------------------------------
- */
-const TimeLineObserver = ({ currentProcess }: { currentProcess: string }) => {
+interface ISocketMessage {
+  currentTransactionId: string;
+  nextTransactionId: string;
+  totalTransactionsChecked: number;
+  totalTransactionsLeft: number;
+  totalTransactionsAccepted: number;
+  totalTransactionsRejected: number;
+  percentageOfTransactionsProcessed: number;
+  currentProcess: string; // Assuming this is part of the response
+}
+
+const TimeLineObserver = ({
+  currentTransactionId,
+  currentProcess
+}: ISocketMessage) => {
+
+  const getDot = (processName: string) => {
+    if (currentProcess === processName) {
+      return <LoadingOutlined />;
+    } else if (
+      (processName === "black_list" && currentProcess !== "black_list") ||
+      (processName === "rules_engine" && (currentProcess === "rules_engine" || currentProcess === "ai_prediction"))
+    ) {
+      return <CheckCircleOutlined style={{ color: "green" }} />;
+    }
+    return null;
+  };
+
   return (
     <div className="flex flex-col gap-5 p-10 border-l">
       <span className="text-sm border rounded-md p-2 bg-gray-100">
-        <strong>Current Transaction ID:</strong>{" "}
-        0x4b0897b0513fdc7c541b6d9d7e929c4e5364d2db
+        <strong>Current Transaction ID:</strong> {currentTransactionId}
       </span>
       <Timeline>
         <Timeline.Item
-          dot={currentProcess === "black_list" && <LoadingOutlined />}
-          color="blue"
+          dot={getDot("black_list")}
+          color={currentProcess === "black_list" ? "blue" : "gray"}
         >
           Checking Reputation List
           <p className="text-xs text-gray-500">
@@ -30,8 +46,8 @@ const TimeLineObserver = ({ currentProcess }: { currentProcess: string }) => {
           </p>
         </Timeline.Item>
         <Timeline.Item
-          dot={currentProcess === "rules_engine" && <LoadingOutlined />}
-          color="green"
+          dot={getDot("rules_engine")}
+          color={currentProcess === "rules_engine" ? "blue" : currentProcess === "ai_prediction" ? "green" : "gray"}
         >
           Rules Engine Weight Calculation
           <p className="text-xs text-gray-500">
@@ -39,7 +55,10 @@ const TimeLineObserver = ({ currentProcess }: { currentProcess: string }) => {
             parameters.
           </p>
         </Timeline.Item>
-        <Timeline.Item color="gray">
+        <Timeline.Item
+          dot={currentProcess === "ai_prediction" ? <LoadingOutlined /> : currentProcess === "completed" ? <CheckCircleOutlined style={{ color: "green" }} /> : null}
+          color={currentProcess === "ai_prediction" ? "blue" : currentProcess === "completed" ? "green" : "gray"}
+        >
           Prediction via AI
           <p className="text-xs text-gray-500">
             Using AI algorithms to predict the outcome based on the calculated
