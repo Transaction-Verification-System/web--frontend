@@ -97,7 +97,7 @@ export default function FailedTransactionsPage() {
       title: "Action",
       key: "action",
       render: (_:any, record:any) => (
-        <Link to={`/transactions/failed/${record.id}`}>
+        <Link to={`/logs/passed-transactions/${record.id}`}>
           <Button type="primary">View Details</Button>
         </Link>
       ),
