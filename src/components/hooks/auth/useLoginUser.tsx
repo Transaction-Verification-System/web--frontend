@@ -1,18 +1,16 @@
 import { LoginFieldType } from "@/components/organisms/auth/LoginForm";
+import axiosInstance from "@/utils/axiosInstance";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useLoginUser() {
   const URL = import.meta.env.VITE_API_URL;
 
-  const { error, isSuccess, isPending, mutate , data } = useMutation({
+  const { error, isSuccess, isPending, mutate, data } = useMutation({
     mutationKey: ["login"],
     mutationFn: async (data: LoginFieldType) => {
-      return (await axios.post(`${URL}/login/`, data));
+      return await axiosInstance.post(`${URL}/login/`, data);
     },
   });
 
-
-
-  return { mutate, error, isSuccess, isPending , data};
+  return { mutate, error, isSuccess, isPending, data };
 }
