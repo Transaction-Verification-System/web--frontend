@@ -39,12 +39,18 @@ export default function TransactionsDetailsPage() {
   const transaction = data?.["Customer Data"];
 
   const handleReportSubmit = async () => {
-    // Here you can handle the report submission
-    console.log("Reported Message:", reportMessage);
-    setIsModalVisible(false);
-    // Reset the report message
-    setReportMessage("");
-    // Optionally, send reportMessage to the server
+    try {
+      await axiosInstance.post(`/transactions/update/${transaction.id}/`, {
+        status: "passed",
+        reason: reportMessage,
+      });
+
+      console.log("Transaction updated to passed with message:", reportMessage);
+      setIsModalVisible(false);
+      setReportMessage("");
+    } catch (err) {
+      console.error("Error updating transaction:", err);
+    }
   };
 
   return (
@@ -93,16 +99,18 @@ export default function TransactionsDetailsPage() {
                   {transaction.verified ? "Verified" : "Not Verified"}
                 </Text>
               </div>
-              <Button type="primary" className="w-full" onClick={() => setIsModalVisible(true)}>
-                Report Transaction
-              </Button>
+              {!transaction.verified && ( // Show button only if not verified
+                <Button type="primary" className="w-full" onClick={() => setIsModalVisible(true)}>
+                  Make Transaction Passed
+                </Button>
+              )}
             </>
           )}
         </div>
       </div>
 
       <Modal
-        title="Report Transaction"
+        title="Provide Reason for Passing the Transaction"
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={[
@@ -115,12 +123,12 @@ export default function TransactionsDetailsPage() {
         ]}
       >
         <Form>
-          <Form.Item label="Message" required>
+          <Form.Item label="Reason" required>
             <Input.TextArea
               rows={4}
               value={reportMessage}
               onChange={(e) => setReportMessage(e.target.value)}
-              placeholder="Enter your message here..."
+              placeholder="Enter your reason here..."
             />
           </Form.Item>
         </Form>
