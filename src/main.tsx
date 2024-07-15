@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         colorInfo: "#000000",
         borderRadius: 8,
         sizeStep: 8,
-        fontFamily: "DM-Sans, sans-serif",
+        fontFamily: "Bricolage Grotesque, sans-serif",
       },
     }}
   >
