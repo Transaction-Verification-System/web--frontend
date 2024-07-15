@@ -11,6 +11,8 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  LineChart,
+  Line,
 } from "recharts";
 
 const { Title } = Typography;
@@ -93,6 +95,16 @@ const barData = [
   { name: "Apr", Transactions: 400 },
 ];
 
+// Line Chart data for historical trends
+const lineData = [
+  { month: "Jan", Transactions: 300 },
+  { month: "Feb", Transactions: 500 },
+  { month: "Mar", Transactions: 200 },
+  { month: "Apr", Transactions: 400 },
+  { month: "May", Transactions: 450 },
+  { month: "Jun", Transactions: 350 },
+];
+
 export default function InsightsPage() {
   return (
     <RootTemplate>
@@ -140,6 +152,21 @@ export default function InsightsPage() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <Bar dataKey="Transactions" fill="#82ca9d" />
                 </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+        </Row>
+        <Row gutter={16} style={{ marginTop: "24px" }}>
+          <Col span={24}>
+            <Card title="Historical Transaction Trends">
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={lineData}>
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <Line type="monotone" dataKey="Transactions" stroke="#8884d8" />
+                </LineChart>
               </ResponsiveContainer>
             </Card>
           </Col>
