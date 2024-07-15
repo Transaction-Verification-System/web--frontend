@@ -11,7 +11,7 @@ import { Timeline } from "antd";
  * and the steps of the transaction observer
  *-----------------------------------------------------------------------------
  */
-const TimeLineObserver = () => {
+const TimeLineObserver = ({ currentProcess }: { currentProcess: string }) => {
   return (
     <div className="flex flex-col gap-5 p-10 border-l">
       <span className="text-sm border rounded-md p-2 bg-gray-100">
@@ -19,14 +19,20 @@ const TimeLineObserver = () => {
         0x4b0897b0513fdc7c541b6d9d7e929c4e5364d2db
       </span>
       <Timeline>
-        <Timeline.Item color="blue">
+        <Timeline.Item
+          dot={currentProcess === "black_list" && <LoadingOutlined />}
+          color="blue"
+        >
           Checking Reputation List
           <p className="text-xs text-gray-500">
             Ensuring the entity's credibility by cross-referencing with known
             reputation sources.
           </p>
         </Timeline.Item>
-        <Timeline.Item dot={<LoadingOutlined />} color="green">
+        <Timeline.Item
+          dot={currentProcess === "rules_engine" && <LoadingOutlined />}
+          color="green"
+        >
           Rules Engine Weight Calculation
           <p className="text-xs text-gray-500">
             Applying various rules to calculate the weight of the transaction
