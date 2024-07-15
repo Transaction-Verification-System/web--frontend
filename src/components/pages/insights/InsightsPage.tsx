@@ -118,7 +118,7 @@ export default function InsightsPage() {
                     nameKey="name"
                     outerRadius={80}
                   >
-                    {pieData.map((entry, index) => (
+                    {pieData.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={["#4CAF50", "#FF9800", "#F44336"][index]}

@@ -1,5 +1,4 @@
 import Localstore from "@/config/localstore";
-import axiosInstance from "@/utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd"; 
 
@@ -8,8 +7,8 @@ export default function useLogoutUser() {
 
   const logout = async () => {
     try {
-      await axiosInstance.post(`/logout/`);
       Localstore.removeAccessToken();
+      Localstore.removeAPIToken();
       message.success("Logged out successfully");
       navigate("/");
     } catch (error) {

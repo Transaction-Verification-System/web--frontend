@@ -54,14 +54,18 @@ const Links = () => {
         <>
           <Link to="/dashboard" className="hover:underline">
             Live Dashboard
-
           </Link>
           <Link to="/insights" className="hover:underline">
             Insights
           </Link>
-          <Link to="/transactions" className="hover:underline">
-            Transactions History
+          <Link to="/logs/passed-transactions" className="hover:underline">
+            Passed Transaction Logs
           </Link>
+
+          <Link to="/logs/failed-transactions" className="hover:underline">
+            Failed Transaction Logs
+          </Link>
+
           <Button onClick={logout} type="link">
             Logout
           </Button>
