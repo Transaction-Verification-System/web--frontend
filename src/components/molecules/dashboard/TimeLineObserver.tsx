@@ -56,8 +56,8 @@ const TimeLineObserver = ({
           </p>
         </Timeline.Item>
         <Timeline.Item
-          dot={currentProcess === "ai_prediction" ? <LoadingOutlined /> : currentProcess === "completed" ? <CheckCircleOutlined style={{ color: "green" }} /> : null}
-          color={currentProcess === "ai_prediction" ? "blue" : currentProcess === "completed" ? "green" : "gray"}
+          dot={currentProcess === "ai_model" ? <LoadingOutlined /> : currentProcess === "completed" ? <CheckCircleOutlined style={{ color: "green" }} /> : null}
+          color={currentProcess === "ai_model" ? "blue" : currentProcess === "completed" ? "green" : "gray"}
         >
           Prediction via AI
           <p className="text-xs text-gray-500">
