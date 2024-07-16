@@ -11,8 +11,11 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+<<<<<<< HEAD
   ScatterChart,
   Scatter,
+=======
+>>>>>>> refs/remotes/origin/main
   LineChart,
   Line,
 } from "recharts";
@@ -22,6 +25,97 @@ import "tailwindcss/tailwind.css";
 
 const { Title } = Typography;
 
+<<<<<<< HEAD
+=======
+// Dummy data for insights and visualizations
+const dummyInsightsData = [
+  {
+    key: "1",
+    title: "Total Transactions",
+    value: 1500,
+  },
+  {
+    key: "2",
+    title: "Successful Transactions",
+    value: 1450,
+  },
+  {
+    key: "3",
+    title: "Failed Transactions",
+    value: 50,
+  },
+  {
+    key: "4",
+    title: "Pending Transactions",
+    value: 10,
+  },
+];
+
+const transactionDetails = [
+  {
+    key: "1",
+    transactionId: "TX12345",
+    status: "Accepted",
+    timestamp: "2024-07-15 10:00",
+  },
+  {
+    key: "2",
+    transactionId: "TX12346",
+    status: "Rejected",
+    timestamp: "2024-07-15 10:05",
+  },
+  {
+    key: "3",
+    transactionId: "TX12347",
+    status: "Pending",
+    timestamp: "2024-07-15 10:10",
+  },
+];
+
+const columns = [
+  {
+    title: "Transaction ID",
+    dataIndex: "transactionId",
+    key: "transactionId",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+  },
+  {
+    title: "Timestamp",
+    dataIndex: "timestamp",
+    key: "timestamp",
+  },
+];
+
+// Pie Chart data
+const pieData = [
+  { name: "Accepted", value: 1450 },
+  { name: "Rejected", value: 50 },
+  { name: "Pending", value: 10 },
+];
+
+// Bar Chart data
+const barData = [
+  { name: "Jan", Transactions: 300 },
+  { name: "Feb", Transactions: 500 },
+  { name: "Mar", Transactions: 200 },
+  { name: "Apr", Transactions: 400 },
+];
+
+// Line Chart data for historical trends
+const lineData = [
+  { month: "Jan", Transactions: 300 },
+  { month: "Feb", Transactions: 500 },
+  { month: "Mar", Transactions: 200 },
+  { month: "Apr", Transactions: 400 },
+  { month: "May", Transactions: 450 },
+  { month: "Jun", Transactions: 350 },
+];
+
+>>>>>>> refs/remotes/origin/main
 export default function InsightsPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["customerData"],
@@ -207,6 +301,7 @@ export default function InsightsPage() {
             </Card>
           </Col>
         </Row>
+<<<<<<< HEAD
         <Row gutter={16} className="mt-4">
           <Col span={24}>
             <Card title="Verified vs Unverified Income">
@@ -258,16 +353,28 @@ export default function InsightsPage() {
             <Card title="Transaction Count by Month" className="mb-4">
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={transactionByMonth}>
+=======
+        <Row gutter={16} style={{ marginTop: "24px" }}>
+          <Col span={24}>
+            <Card title="Historical Transaction Trends">
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={lineData}>
+>>>>>>> refs/remotes/origin/main
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
                   <CartesianGrid strokeDasharray="3 3" />
+<<<<<<< HEAD
                   <Line type="monotone" dataKey="passed" stroke="#4CAF50" />
                   <Line type="monotone" dataKey="failed" stroke="#F44336" />
+=======
+                  <Line type="monotone" dataKey="Transactions" stroke="#8884d8" />
+>>>>>>> refs/remotes/origin/main
                 </LineChart>
               </ResponsiveContainer>
             </Card>
           </Col>
+<<<<<<< HEAD
           <Col span={12}>
             <Card title="Payment Type Distribution" className="mb-4">
               <ResponsiveContainer width="100%" height={300}>
@@ -284,6 +391,10 @@ export default function InsightsPage() {
           </Col>
         </Row>
         <div className="mt-4">
+=======
+        </Row>
+        <div style={{ marginTop: "24px" }}>
+>>>>>>> refs/remotes/origin/main
           <Title level={4}>Most Recent Transactions</Title>
           <Table
             columns={[
