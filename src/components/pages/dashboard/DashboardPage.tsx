@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (currentSocketMessage && !currentSocketMessage.verified) {
-      const errorMsg = `Transaction ${currentSocketMessage.response.currentTransactionId} failed due to ${currentSocketMessage.message}`;
+      const errorMsg = `${currentSocketMessage.message}`;
       antMsg.error(errorMsg);
     }
 
