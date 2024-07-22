@@ -13,6 +13,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import RootTemplate from "@/components/templates/root/RootTemplate";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import * as XLSX from "xlsx";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -95,13 +96,20 @@ export default function PassedTransactionsPage() {
     {
       title: "Action",
       key: "action",
-      render: (_:any, record:any) => (
+      render: (_: any, record: any) => (
         <Link to={`/logs/passed-transactions/${record.id}`}>
           <Button type="primary">View Details</Button>
         </Link>
       ),
     },
   ];
+
+  const handleDownload = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Passed Transactions");
+    XLSX.writeFile(workbook, "passed_transactions.xlsx");
+  };
 
   return (
     <RootTemplate>
@@ -119,13 +127,21 @@ export default function PassedTransactionsPage() {
             className="mb-4"
           />
           
-          <div className="overflow-auto rounded-lg shadow-lg">
+          <Button
+            type="primary"
+            onClick={handleDownload}
+            className="mb-4"
+          >
+            Download Transactions
+          </Button>
+          
+          <div className="overflow-auto rounded-lg">
             <Table
               columns={columns}
               dataSource={filteredData}
               rowKey="id"
               pagination={{ pageSize: 10 }}
-              scroll={{ y: 400 }}
+              // scroll={{ y: 400 }}
               bordered
               size="middle"
               className="bg-white"

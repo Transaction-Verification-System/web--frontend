@@ -13,13 +13,14 @@ import axiosInstance from "@/utils/axiosInstance";
 import RootTemplate from "@/components/templates/root/RootTemplate";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import * as XLSX from "xlsx";
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 export default function FailedTransactionsPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ["failedTransactions"],
     queryFn: async () => {
@@ -54,7 +55,7 @@ export default function FailedTransactionsPage() {
   }
 
   // Filter data based on search term
-  const filteredData = data.failed_customer_data.filter((item:any) =>
+  const filteredData = data.failed_customer_data.filter((item: any) =>
     item.reason.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -96,13 +97,20 @@ export default function FailedTransactionsPage() {
     {
       title: "Action",
       key: "action",
-      render: (_:any, record:any) => (
-        <Link to={`/logs/passed-transactions/${record.id}`}>
+      render: (_: any, record: any) => (
+        <Link to={`/logs/failed-transactions/${record.id}`}>
           <Button type="primary">View Details</Button>
         </Link>
       ),
     },
   ];
+
+  const handleDownload = () => {
+    const ws = XLSX.utils.json_to_sheet(filteredData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Failed Transactions");
+    XLSX.writeFile(wb, "Failed_Transactions.xlsx");
+  };
 
   return (
     <RootTemplate>
@@ -112,21 +120,25 @@ export default function FailedTransactionsPage() {
             Failed Transactions
           </Title>
           <Divider />
-          
+
           <Input
             placeholder="Search by Reason"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="mb-4"
           />
-          
-          <div className="overflow-auto rounded-lg shadow-lg">
+
+          <Button type="primary" onClick={handleDownload} className="mb-4">
+            Download Transactions
+          </Button>
+
+          <div className="overflow-auto rounded-lg ">
             <Table
               columns={columns}
               dataSource={filteredData}
               rowKey="id"
               pagination={{ pageSize: 10 }}
-              scroll={{ y: 400 }}
+              // scroll={{ y: 400 }}
               bordered
               size="middle"
               className="bg-white"

@@ -1,24 +1,49 @@
 import { useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { Button, Typography, Divider, Spin, Modal, Input, Form } from "antd";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Button, Typography, Divider, Spin, Modal, message } from "antd";
 import RootTemplate from "@/components/templates/root/RootTemplate";
 
 const { Title, Text } = Typography;
 
-export default function TransactionsDetailsPage() {
+export default function PassedTransactionsDetailsPage() {
   const { id } = useParams();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [reportMessage, setReportMessage] = useState("");
+  const [, setReportMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); 
+
+  const { pathname } = useLocation();
+  const URI = pathname.split("/")[2];
+
+  const apiURI =
+    URI === "passed-transactions"
+      ? `/passed/detail/${id}`
+      : `/failed/detail/${id}`;
 
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ["transactionDetail", id],
     queryFn: async () => {
-      const response = await axiosInstance.get(`/history/detail/${id}/`);
+      const response = await axiosInstance.get(apiURI);
       return response.data;
     },
   });
+
+  const { mutate: makeTransactionPassed } = useMutation({
+    mutationKey: ["makeTransactionPassed"],
+    mutationFn: async () => {
+      const response = await axiosInstance.post(`/failed/detail/${id}/`);
+      return response.data;
+    },
+    onError: () => {
+      message.error("Error updating transaction");
+    },
+    onSuccess: () => {
+      message.success("Transaction successfully updated");
+      setReportMessage("");
+    },
+  });
+
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -38,19 +63,28 @@ export default function TransactionsDetailsPage() {
 
   const transaction = data?.["Customer Data"];
 
-  const handleReportSubmit = async () => {
-    try {
-      await axiosInstance.post(`/transactions/update/${transaction.id}/`, {
-        status: "passed",
-        reason: reportMessage,
-      });
+  const handleReportSubmit = () => {
+    Modal.confirm({
+      title: "Confirm Action",
+      content:
+        "This action is irreversible. Please ensure that this transaction is actually verified before proceeding.",
+      okText: "Yes, Proceed",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        setIsSubmitting(true);
+        try {
+          makeTransactionPassed();
 
-      console.log("Transaction updated to passed with message:", reportMessage);
-      setIsModalVisible(false);
-      setReportMessage("");
-    } catch (err) {
-      console.error("Error updating transaction:", err);
-    }
+          navigate(`/logs/passed-transactions/${id}`);
+          window.location.reload();
+        } catch (err) {
+          console.error("Error updating transaction:", err);
+        } finally {
+          setIsSubmitting(false);
+        }
+      },
+    });
   };
 
   return (
@@ -64,7 +98,8 @@ export default function TransactionsDetailsPage() {
           {transaction && (
             <>
               <div className="mb-4">
-                <Text strong>Transaction ID:</Text> <Text>{transaction.id}</Text>
+                <Text strong>Transaction ID:</Text>{" "}
+                <Text>{transaction.id}</Text>
               </div>
               <div className="mb-4">
                 <Text strong>Income:</Text> <Text>${transaction.income}</Text>
@@ -81,26 +116,41 @@ export default function TransactionsDetailsPage() {
                 <Text strong>Reason:</Text> <Text>{transaction.reason}</Text>
               </div>
               <div className="mb-4">
-                <Text strong>Housing Status:</Text> <Text>{transaction.housing_status}</Text>
+                <Text strong>Housing Status:</Text>{" "}
+                <Text>{transaction.housing_status}</Text>
               </div>
               <div className="mb-4">
                 <Text strong>Phone Validity:</Text>{" "}
-                <Text>{transaction.phone_home_valid ? "Valid" : "Invalid"}</Text>
+                <Text>
+                  {transaction.phone_home_valid ? "Valid" : "Invalid"}
+                </Text>
               </div>
               <div className="mb-4">
-                <Text strong>Device OS:</Text> <Text>{transaction.device_os}</Text>
+                <Text strong>Device OS:</Text>{" "}
+                <Text>{transaction.device_os}</Text>
               </div>
               <div className="mb-4">
-                <Text strong>Days Since Request:</Text> <Text>{transaction.days_since_request}</Text>
+                <Text strong>Days Since Request:</Text>{" "}
+                <Text>{transaction.days_since_request}</Text>
               </div>
               <div className="mb-6">
                 <Text strong>Status:</Text>{" "}
-                <Text className={transaction.verified ? "text-green-500" : "text-red-500"}>
+                <Text
+                  className={
+                    transaction.verified ? "text-green-500" : "text-red-500"
+                  }
+                >
                   {transaction.verified ? "Verified" : "Not Verified"}
                 </Text>
               </div>
-              {!transaction.verified && ( // Show button only if not verified
-                <Button type="primary" className="w-full" onClick={() => setIsModalVisible(true)}>
+              {!transaction.verified && (
+                <Button
+                  type="primary"
+                  className="w-full"
+                  key="submit"
+                  loading={isSubmitting}
+                  onClick={handleReportSubmit}
+                >
                   Make Transaction Passed
                 </Button>
               )}
@@ -108,31 +158,6 @@ export default function TransactionsDetailsPage() {
           )}
         </div>
       </div>
-
-      <Modal
-        title="Provide Reason for Passing the Transaction"
-        visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        footer={[
-          <Button key="back" onClick={() => setIsModalVisible(false)}>
-            Cancel
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleReportSubmit}>
-            Submit
-          </Button>,
-        ]}
-      >
-        <Form>
-          <Form.Item label="Reason" required>
-            <Input.TextArea
-              rows={4}
-              value={reportMessage}
-              onChange={(e) => setReportMessage(e.target.value)}
-              placeholder="Enter your reason here..."
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
     </RootTemplate>
   );
 }
