@@ -10,7 +10,7 @@ const { Title, Text } = Typography;
 export default function PassedTransactionsDetailsPage() {
   const { id } = useParams();
   const [, setReportMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { pathname } = useLocation();
   const URI = pathname.split("/")[2];
@@ -133,6 +133,18 @@ export default function PassedTransactionsDetailsPage() {
                 <Text strong>Days Since Request:</Text>{" "}
                 <Text>{transaction.days_since_request}</Text>
               </div>
+
+              <div className="mb-6">
+                <Text strong>Money Laundering Risk:</Text>{" "}
+                <Text
+                  className={
+                    !transaction.aml_risk ? "text-green-500" : "text-red-500"
+                  }
+                >
+                  {transaction.aml_risk ? "Risky" : "Not Risky"}
+                </Text>
+              </div>
+
               <div className="mb-6">
                 <Text strong>Status:</Text>{" "}
                 <Text

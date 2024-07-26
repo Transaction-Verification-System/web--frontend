@@ -8,6 +8,7 @@ import {
   Divider,
   Button,
   Input,
+  Badge,
 } from "antd";
 import axiosInstance from "@/utils/axiosInstance";
 import RootTemplate from "@/components/templates/root/RootTemplate";
@@ -57,6 +58,18 @@ export default function PassedTransactionsPage() {
   const filteredData = data.passed_customer_data.filter((item: any) =>
     item.reason.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+
+  const renderBadge = (text:string) => {
+    const isTrue = Boolean(text);
+  
+    const color = isTrue ? 'green' : 'red';
+    const displayText = isTrue ? 'True' : 'False';
+  
+    return (
+      <Badge color={color} text={displayText} />
+    );
+  };
 
   const columns = [
     {
@@ -92,6 +105,12 @@ export default function PassedTransactionsPage() {
       title: "Transaction Reason",
       dataIndex: "reason",
       key: "reason",
+    },
+    {
+      title: "Money Laundering Risk",
+      dataIndex: "aml_risk",
+      key: "aml_risk",
+      render: (text: any) => renderBadge(text),
     },
     {
       title: "Action",
@@ -141,7 +160,6 @@ export default function PassedTransactionsPage() {
               dataSource={filteredData}
               rowKey="id"
               pagination={{ pageSize: 10 }}
-              // scroll={{ y: 400 }}
               bordered
               size="middle"
               className="bg-white"

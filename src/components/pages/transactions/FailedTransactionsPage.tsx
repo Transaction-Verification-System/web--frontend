@@ -8,6 +8,7 @@ import {
   Divider,
   Button,
   Input,
+  Badge,
 } from "antd";
 import axiosInstance from "@/utils/axiosInstance";
 import RootTemplate from "@/components/templates/root/RootTemplate";
@@ -59,6 +60,15 @@ export default function FailedTransactionsPage() {
     item.reason.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const renderBadge = (text: string) => {
+    const isTrue = Boolean(text);
+
+    const color = isTrue ? "green" : "red";
+    const displayText = isTrue ? "True" : "False";
+
+    return <Badge color={color} text={displayText} />;
+  };
+
   const columns = [
     {
       title: "ID",
@@ -76,7 +86,8 @@ export default function FailedTransactionsPage() {
       title: "Name/Email Similarity",
       dataIndex: "name_email_similarity",
       key: "name_email_similarity",
-      sorter: (a: any, b: any) => a.name_email_similarity - b.name_email_similarity,
+      sorter: (a: any, b: any) =>
+        a.name_email_similarity - b.name_email_similarity,
     },
     {
       title: "Employment Status",
@@ -93,6 +104,12 @@ export default function FailedTransactionsPage() {
       title: "Transaction Reason",
       dataIndex: "reason",
       key: "reason",
+    },
+    {
+      title: "Money Laundering Risk",
+      dataIndex: "aml_risk",
+      key: "aml_risk",
+      render: (text: any) => renderBadge(text),
     },
     {
       title: "Action",

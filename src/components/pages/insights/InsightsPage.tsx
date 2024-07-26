@@ -1,336 +1,292 @@
+import React from "react";
 import RootTemplate from "@/components/templates/root/RootTemplate";
-import { Card, Col, Row, Typography, Table } from "antd";
+import { Card, Empty, Badge, Button } from "antd";
 import {
-  PieChart, Pie, Cell, ResponsiveContainer,
-  BarChart, Bar, XAxis, Tooltip, CartesianGrid,
-  LineChart, Line
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import "tailwindcss/tailwind.css";
+import { useNavigate } from "react-router-dom";
 
-const { Title } = Typography;
+// Types for the data and props
+interface ChartData {
+  name: string;
+  value: number;
+  color?: string;
+}
 
-export default function InsightsPage() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["customerData"],
+interface GraphCardProps {
+  title: string;
+  description: string;
+  data: ChartData[] | undefined;
+  graphType: "pie" | "bar";
+  icon: React.ReactNode;
+}
+
+// Reusable GraphCard component
+const GraphCard: React.FC<GraphCardProps> = ({ title, description, data, graphType, icon }) => {
+  return (
+    <Card
+      title={
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {icon}
+          <div style={{ marginLeft: '10px' }}>
+            <strong>{title}</strong>
+            <p style={{ margin: 0 }} className="font-light whitespace-normal text-xs">
+              {description}
+            </p>
+          </div>
+        </div>
+      }
+      style={{ marginBottom: 20 }}
+    >
+      <ResponsiveContainer width="100%" height={350}>
+        {data && data.length > 0 ? (
+          graphType === "pie" ? (
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={120}
+                label
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color || "#007bff"} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          ) : (
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#007bff" />
+            </BarChart>
+          )
+        ) : (
+          <Empty description="No Data Available" style={{ textAlign: 'center', padding: '20px' }} />
+        )}
+      </ResponsiveContainer>
+    </Card>
+  );
+};
+
+const FRAUD_URL = import.meta.env.VITE_API_URL + "/insights/fraud/";
+const AML_URL = import.meta.env.VITE_API_URL + "/insights/aml/";
+
+// Predefined list of visible and professional colors
+const colors = [
+  "#007bff", // Blue
+  "#28a745", // Green
+  "#dc3545", // Red
+  "#ffc107", // Yellow
+  "#17a2b8", // Teal
+  "#6f42c1", // Purple
+  "#fd7e14", // Orange
+  "#20c997", // Cyan
+  "#e83e8c", // Pink
+  "#6c757d", // Gray
+];
+
+// Function to get a visible color
+const getColor = (index: number): string => colors[index % colors.length];
+
+// Function to transform the data into the required format
+const transformData = (data: Record<string, number> | null): ChartData[] => {
+  if (!data) return [];
+  return Object.entries(data).map(([name, value], index) => ({
+    name,
+    value,
+    color: getColor(index),
+  }));
+};
+
+const InsightsPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  // Existing queries
+  const employmentFraudQuery = useQuery<ChartData[]>({
+    queryKey: ["employmentFraud"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/history/");
-      return response.data;
+      const response = await axiosInstance.get(FRAUD_URL + "employment/");
+      return transformData(response.data);
     },
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading data</div>;
-
-  // Ensure data is in the expected format
-  const passedCustomers = Array.isArray(data?.passed_customer_data) ? data.passed_customer_data : [];
-  const failedCustomers = Array.isArray(data?.failed_customer_data) ? data.failed_customer_data : [];
-
-  // Transaction details
-  const transactionDetails = [
-    ...passedCustomers.map((customer:any) => ({
-      transactionId: `TX-${customer.id}`,
-      status: "Passed",
-      timestamp: new Date().toISOString(),
-    })),
-    ...failedCustomers.map((customer:any) => ({
-      transactionId: `TX-${customer.id}`,
-      status: "Failed",
-      timestamp: new Date().toISOString(),
-    })),
-  ].slice(0, 5);
-
-  // Total passed and failed
-  const totalPassed = passedCustomers.length;
-  const totalFailed = failedCustomers.length;
-
-  // Pie data for passed and failed
-  const pieData = [
-    { name: "Passed", value: totalPassed },
-    { name: "Failed", value: totalFailed },
-  ];
-
-  // Income range distribution
-  const incomeRanges = [
-    { range: "<20K", countPassed: 0, countFailed: 0 },
-    { range: "20K-40K", countPassed: 0, countFailed: 0 },
-    { range: "40K-60K", countPassed: 0, countFailed: 0 },
-    { range: "60K-80K", countPassed: 0, countFailed: 0 },
-    { range: ">80K", countPassed: 0, countFailed: 0 },
-  ];
-
-  passedCustomers.forEach((customer:any) => {
-    if (customer.income < 20000) incomeRanges[0].countPassed++;
-    else if (customer.income < 40000) incomeRanges[1].countPassed++;
-    else if (customer.income < 60000) incomeRanges[2].countPassed++;
-    else if (customer.income < 80000) incomeRanges[3].countPassed++;
-    else incomeRanges[4].countPassed++;
+  const employmentAMLQuery = useQuery<ChartData[]>({
+    queryKey: ["employmentAML"],
+    queryFn: async () => {
+      const response = await axiosInstance.get(AML_URL + "employment/");
+      return transformData(response.data);
+    },
   });
 
-  failedCustomers.forEach((customer:any) => {
-    if (customer.income < 20000) incomeRanges[0].countFailed++;
-    else if (customer.income < 40000) incomeRanges[1].countFailed++;
-    else if (customer.income < 60000) incomeRanges[2].countFailed++;
-    else if (customer.income < 80000) incomeRanges[3].countFailed++;
-    else incomeRanges[4].countFailed++;
+  const fraudDeviceQuery = useQuery<ChartData[]>({
+    queryKey: ["fraudDevice"],
+    queryFn: async () => {
+      const response = await axiosInstance.get(FRAUD_URL + "device/");
+      return transformData(response.data);
+    },
   });
 
-  // Employment status distribution
-  const employmentStatusData = [
-    { status: "Employed", passed: 0, failed: 0 },
-    { status: "Self-Employed", passed: 0, failed: 0 },
-    { status: "Unemployed", passed: 0, failed: 0 },
-  ];
-
-  passedCustomers.forEach((customer:any) => {
-    if (customer.employment_status === "employed")
-      employmentStatusData[0].passed++;
-    else if (customer.employment_status === "self-employed")
-      employmentStatusData[1].passed++;
-    else if (customer.employment_status === "unemployed")
-      employmentStatusData[2].passed++;
+  const amlDeviceQuery = useQuery<ChartData[]>({
+    queryKey: ["amlDevice"],
+    queryFn: async () => {
+      const response = await axiosInstance.get(AML_URL + "device/");
+      return transformData(response.data);
+    },
   });
 
-  failedCustomers.forEach((customer:any) => {
-    if (customer.employment_status === "employed")
-      employmentStatusData[0].failed++;
-    else if (customer.employment_status === "self-employed")
-      employmentStatusData[1].failed++;
-    else if (customer.employment_status === "unemployed")
-      employmentStatusData[2].failed++;
+  // New queries for housing and payment data
+  const fraudHousingQuery = useQuery<ChartData[]>({
+    queryKey: ["fraudHousing"],
+    queryFn: async () => {
+      const response = await axiosInstance.get(FRAUD_URL + "housing/");
+      return transformData(response.data);
+    },
   });
 
-  // Payment type distribution
-  const paymentTypeData = [
-    { type: "Credit", passed: 0, failed: 0 },
-    { type: "Debit", passed: 0, failed: 0 },
-  ];
-
-  passedCustomers.forEach((customer:any) => {
-    if (customer.payment_type === "credit") paymentTypeData[0].passed++;
-    else if (customer.payment_type === "debit") paymentTypeData[1].passed++;
+  const amlHousingQuery = useQuery<ChartData[]>({
+    queryKey: ["amlHousing"],
+    queryFn: async () => {
+      const response = await axiosInstance.get(AML_URL + "housing/");
+      return transformData(response.data);
+    },
   });
 
-  failedCustomers.forEach((customer:any) => {
-    if (customer.payment_type === "credit") paymentTypeData[0].failed++;
-    else if (customer.payment_type === "debit") paymentTypeData[1].failed++;
+  const fraudPaymentQuery = useQuery<ChartData[]>({
+    queryKey: ["fraudPayment"],
+    queryFn: async () => {
+      const response = await axiosInstance.get(FRAUD_URL + "payment/");
+      return transformData(response.data);
+    },
   });
 
-  // Cause of failure data and USD transactions count
-  const failureReasonsData = [
-    { reason: "AI model prediction", count: 0 },
-    { reason: "Blacklist check", count: 0 },
-    // Add other reasons here
-  ];
-  let usdTransactionCount = 0;
-
-  const failedLocations = {};
-
-  failedCustomers.forEach((customer:any) => {
-    const reason = customer.reason;
-    const reasonData = failureReasonsData.find(r => r.reason === reason);
-    if (reasonData) reasonData.count++;
-
-    if (customer.payment_currency === "USD" || customer.received_currency === "USD") {
-      usdTransactionCount++;
-    }
-
-    const location = customer.country || 'Unknown';
-    if (!failedLocations[location]) {
-      failedLocations[location] = 0;
-    }
-    failedLocations[location]++;
+  const amlPaymentQuery = useQuery<ChartData[]>({
+    queryKey: ["amlPayment"],
+    queryFn: async () => {
+      const response = await axiosInstance.get(AML_URL + "payment/");
+      return transformData(response.data);
+    },
   });
 
-  // Determine the location with the most failures
-  const mostFailedLocation = Object.entries(failedLocations).sort((a, b) => b[1] - a[1])[0];
-
-  // Device distribution data
-  const deviceData = [
-    { type: "iOS", count: 0 },
-    { type: "Android", count: 0 },
-  ];
-
-  [...passedCustomers, ...failedCustomers].forEach((transaction) => {
-    const device = transaction.device_os;
-    const deviceInfo = deviceData.find(d => d.type === device);
-    if (deviceInfo) deviceInfo.count++;
+  const fraudSourceQuery = useQuery<ChartData[]>({
+    queryKey: ["fraudSource"],
+    queryFn: async () => {
+      const response = await axiosInstance.get(FRAUD_URL + "source/");
+      return transformData(response.data);
+    },
   });
 
-  // Currency usage data
-  const currencyData = [];
-
-  [...passedCustomers, ...failedCustomers].forEach((transaction) => {
-    const paymentCurrency = transaction.payment_currency;
-    const receivedCurrency = transaction.received_currency;
-    
-    // Update payment currency
-    let currencyInfo = currencyData.find(c => c.currency === paymentCurrency);
-    if (!currencyInfo) {
-      currencyInfo = { currency: paymentCurrency, count: 0 };
-      currencyData.push(currencyInfo);
-    }
-    currencyInfo.count++;
-
-    // Update received currency
-    currencyInfo = currencyData.find(c => c.currency === receivedCurrency);
-    if (!currencyInfo) {
-      currencyInfo = { currency: receivedCurrency, count: 0 };
-      currencyData.push(currencyInfo);
-    }
-    currencyInfo.count++;
-  });
-
-  // Daily transactions data
-  const dailyData = {};
-
-  [...passedCustomers, ...failedCustomers].forEach((transaction) => {
-    const date = transaction.date;
-    if (!dailyData[date]) dailyData[date] = 0;
-    dailyData[date]++;
+  const amlSourceQuery = useQuery<ChartData[]>({
+    queryKey: ["amlSource"],
+    queryFn: async () => {
+      const response = await axiosInstance.get(AML_URL + "source/");
+      return transformData(response.data);
+    },
   });
 
   return (
     <RootTemplate>
-      <div className="p-6">
-        <Title level={2} className="mb-4">Insights Dashboard</Title>
-        
-        {/* Transaction Status Distribution */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Card title="Transaction Status Distribution" className="mb-4">
-              <ResponsiveContainer width="100%" height={350}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    dataKey="value"
-                    nameKey="name"
-                    outerRadius={120}
-                    labelLine={false}
-                    label={({ name, value }) => `${name}: ${value}`}
-                  >
-                    {pieData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={["#4CAF50", "#F44336"][index]} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: "#f5f5f5", border: "none" }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-          
-          {/* Employment Status Distribution */}
-          <Col span={12}>
-            <Card title="Employment Status Distribution" className="mb-4">
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={employmentStatusData}>
-                  <XAxis dataKey="status" />
-                  <Tooltip contentStyle={{ backgroundColor: "#f5f5f5", border: "none" }} />
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Bar dataKey="passed" fill="#4CAF50" />
-                  <Bar dataKey="failed" fill="#F44336" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
-        
-        <Row gutter={16} className="mt-4">
-          {/* Payment Type Distribution */}
-          <Col span={12}>
-            <Card title="Payment Type Distribution" className="mb-4">
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={paymentTypeData}>
-                  <XAxis dataKey="type" />
-                  <Tooltip contentStyle={{ backgroundColor: "#f5f5f5", border: "none" }} />
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Bar dataKey="passed" fill="#4CAF50" />
-                  <Bar dataKey="failed" fill="#F44336" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-          
-          {/* Device Distribution */}
-          <Col span={12}>
-            <Card title="Device Distribution" className="mb-4">
-              <ResponsiveContainer width="100%" height={350}>
-                <PieChart>
-                  <Pie
-                    data={deviceData}
-                    dataKey="count"
-                    nameKey="type"
-                    outerRadius={120}
-                    labelLine={false}
-                    label={({ name, value }) => `${name}: ${value}`}
-                  >
-                    {deviceData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={["#4285F4", "#34A853"][index]} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: "#f5f5f5", border: "none" }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
-        
-        <Row gutter={16} className="mt-4">
-          {/* Cause of Failure Card */}
-          <Col span={12}>
-            <Card title="Most Common Cause of Failure" className="mb-4">
-              <p>{failureReasonsData.sort((a, b) => b.count - a.count)[0]?.reason || 'Unknown'}</p>
-              <p>Total Count: {failureReasonsData.reduce((sum, item) => sum + item.count, 0)}</p>
-            </Card>
-          </Col>
-          
-          {/* USD Transactions Card */}
-          <Col span={12}>
-            <Card title="USD Transactions Count" className="mb-4">
-              <p>Total USD Transactions: {usdTransactionCount}</p>
-            </Card>
-          </Col>
-        </Row>
-        
-        <Row gutter={16} className="mt-4">
-          {/* Most Failed Transactions Location */}
-          <Col span={12}>
-            <Card title="Location with Most Failed Transactions" className="mb-4">
-              <p>{mostFailedLocation ? mostFailedLocation[0] : 'Unknown'}</p>
-              <p>Total Failures: {mostFailedLocation ? mostFailedLocation[1] : 0}</p>
-            </Card>
-          </Col>
-          
-          {/* Daily Transaction Overview */}
-          <Col span={12}>
-            <Card title="Daily Transaction Overview" className="mb-4">
-              <ResponsiveContainer width="100%" height={350}>
-                <LineChart data={Object.entries(dailyData).map(([date, count]) => ({ date, count }))}>
-                  <XAxis dataKey="date" />
-                  <Tooltip contentStyle={{ backgroundColor: "#f5f5f5", border: "none" }} />
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Line type="monotone" dataKey="count" stroke="#8884d8" />
-                </LineChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
-        
-        {/* Recent Transactions Table */}
-        <div className="mt-4">
-          <Title level={4}>Most Recent Transactions</Title>
-          <Table
-            columns={[
-              { title: "Transaction ID", dataIndex: "transactionId", key: "transactionId" },
-              { title: "Status", dataIndex: "status", key: "status" },
-              { title: "Timestamp", dataIndex: "timestamp", key: "timestamp" },
-            ]}
-            dataSource={transactionDetails}
-            pagination={false}
-          />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <GraphCard
+          title="Rate of Employment on Money Laundering"
+          description="Data highlighting Money Laundering activities across various employment categories."
+          data={employmentAMLQuery.data}
+          graphType="bar"
+          icon={<Badge count="AML" style={{ backgroundColor: '#17a2b8' }} />}
+        />
+        <GraphCard
+          title="Rate of Employment on Fraud"
+          description="Data highlighting Fraud activities across various employment categories."
+          data={employmentFraudQuery.data}
+          graphType="pie"
+          icon={<Badge count="Fraud" style={{ backgroundColor: '#dc3545' }} />}
+        />
+        <GraphCard
+          title="Money Laundering by Device"
+          description="Data highlighting Money Laundering activities by device type."
+          data={amlDeviceQuery.data}
+          graphType="bar"
+          icon={<Badge count="Device AML" style={{ backgroundColor: '#6f42c1' }} />}
+        />
+        <GraphCard
+          title="Fraud by Device"
+          description="Statistics showing the distribution of fraud cases by device type."
+          data={fraudDeviceQuery.data}
+          graphType="bar"
+          icon={<Badge count="Device Fraud" style={{ backgroundColor: '#fd7e14' }} />}
+        />
+        <GraphCard
+          title="Money Laundering in Housing"
+          description="Data highlighting Money Laundering activities across various housing categories."
+          data={amlHousingQuery.data}
+          graphType="bar"
+          icon={<Badge count="Housing AML" style={{ backgroundColor: '#17a2b8' }} />}
+        />
+        <GraphCard
+          title="Fraud in Housing"
+          description="Data highlighting Fraud activities across various housing categories."
+          data={fraudHousingQuery.data}
+          graphType="bar"
+          icon={<Badge count="Housing Fraud" style={{ backgroundColor: '#dc3545' }} />}
+        />
+        <GraphCard
+          title="Money Laundering in Payment"
+          description="Data highlighting Money Laundering activities across various payment categories."
+          data={amlPaymentQuery.data}
+          graphType="bar"
+          icon={<Badge count="Payment AML" style={{ backgroundColor: '#17a2b8' }} />}
+        />
+        <GraphCard
+          title="Fraud in Payment"
+          description="Data highlighting Fraud activities across various payment categories."
+          data={fraudPaymentQuery.data}
+          graphType="bar"
+          icon={<Badge count="Payment Fraud" style={{ backgroundColor: '#dc3545' }} />}
+        />
+        <GraphCard
+          title="Money Laundering by Source"
+          description="Data highlighting Money Laundering activities by source."
+          data={amlSourceQuery.data}
+          graphType="bar"
+          icon={<Badge count="Source AML" style={{ backgroundColor: '#17a2b8' }} />}
+        />
+        <GraphCard
+          title="Fraud by Source"
+          description="Data highlighting Fraud activities by source."
+          data={fraudSourceQuery.data}
+          graphType="bar"
+          icon={<Badge count="Source Fraud" style={{ backgroundColor: '#dc3545' }} />}
+        />
       </div>
+      <Button
+        type="primary"
+        style={{ position: 'fixed', bottom: 30, right: 30 }}
+        onClick={() => navigate('/geologs')}
+      >
+        GeoLogs
+      </Button>
     </RootTemplate>
   );
-}
+};
+
+export default InsightsPage;
