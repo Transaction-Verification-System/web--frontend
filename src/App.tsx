@@ -159,7 +159,7 @@ const TeamSection: React.FC = () => (
         <Col xs={24} sm={12} md={6} lg={6}>
           <Card className="border-gray-300 border">
             <Avatar src="https://avatars.githubusercontent.com/u/31906789?v=4" size={64} />
-            <h3 className="text-xl font-semibold mt-4">Subnia Maharjan</h3>
+            <h3 className="text-xl font-semibold mt-4">Subina Maharjan</h3>
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
@@ -170,7 +170,7 @@ const TeamSection: React.FC = () => (
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
           <Card className="border-gray-300 border">
-            <Avatar src="https://avatars.githubusercontent.com/u/1415367?v=4" size={64} />
+            <Avatar src="https://avatars.githubusercontent.com/u/17626267?v=4" size={64} />
             <h3 className="text-xl font-semibold mt-4">Aananda Bhusal</h3>
           </Card>
         </Col>
