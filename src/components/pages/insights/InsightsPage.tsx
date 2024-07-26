@@ -1,20 +1,9 @@
 import RootTemplate from "@/components/templates/root/RootTemplate";
 import { Card, Col, Row, Typography, Table } from "antd";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ScatterChart,
-  Scatter,
-  LineChart,
-  Line,
+  PieChart, Pie, Cell, ResponsiveContainer,
+  BarChart, Bar, XAxis, Tooltip, CartesianGrid,
+  LineChart, Line
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
@@ -34,8 +23,8 @@ export default function InsightsPage() {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading data</div>;
 
-  const passedCustomers = data?.passed_customer_data || [];
-  const failedCustomers = data?.failed_customer_data || [];
+  const passedCustomers = Array.isArray(data?.passed_customer_data) ? data.passed_customer_data : [];
+  const failedCustomers = Array.isArray(data?.failed_customer_data) ? data.failed_customer_data : [];
 
   const transactionDetails = [
     ...passedCustomers.map((customer: any) => ({
@@ -58,7 +47,6 @@ export default function InsightsPage() {
     { name: "Failed", value: totalFailed },
   ];
 
-  // Prepare income range data for passed and failed with better spread
   const incomeRanges = [
     { range: "<20K", countPassed: 0, countFailed: 0 },
     { range: "20K-40K", countPassed: 0, countFailed: 0 },
@@ -82,34 +70,6 @@ export default function InsightsPage() {
     else if (customer.income < 80000) incomeRanges[3].countFailed++;
     else incomeRanges[4].countFailed++;
   });
-
-  const scatterData = [
-    ...passedCustomers.map((customer: any) => ({
-      income: customer.income,
-      verified: customer.verified
-        ? Math.random() * 0.2 + 0.8
-        : Math.random() * 0.2, // Spread verified around 0.8-1
-      status: "Passed",
-    })),
-    ...failedCustomers.map((customer: any) => ({
-      income: customer.income,
-      verified: customer.verified
-        ? Math.random() * 0.2 + 0.8
-        : Math.random() * 0.2, // Spread verified around 0.8-1
-      status: "Failed",
-    })),
-  ];
-
-  const creditRiskScores = [
-    ...passedCustomers.map((customer: any) => ({
-      score: customer.credit_risk_score,
-      status: "Passed",
-    })),
-    ...failedCustomers.map((customer: any) => ({
-      score: customer.credit_risk_score,
-      status: "Failed",
-    })),
-  ];
 
   const employmentStatusData = [
     { status: "Employed", passed: 0, failed: 0 },
@@ -135,17 +95,6 @@ export default function InsightsPage() {
       employmentStatusData[2].failed++;
   });
 
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
-  const transactionByMonth = months.map((month) => ({
-    month,
-    passed: passedCustomers.filter(
-      (customer: any) => new Date(customer.timestamp).getMonth() + 1 === month
-    ).length,
-    failed: failedCustomers.filter(
-      (customer: any) => new Date(customer.timestamp).getMonth() + 1 === month
-    ).length,
-  }));
-
   const paymentTypeData = [
     { type: "Credit", passed: 0, failed: 0 },
     { type: "Debit", passed: 0, failed: 0 },
@@ -161,24 +110,92 @@ export default function InsightsPage() {
     else if (customer.payment_type === "debit") paymentTypeData[1].failed++;
   });
 
+  const failureReasonsData = [
+    { reason: "AI model prediction", count: 0 },
+    { reason: "Blacklist check", count: 0 },
+  ];
+  let usdTransactionCount = 0;
+
+  const failedLocations: { [key: string]: number } = {};
+
+  failedCustomers.forEach((customer: any) => {
+    const reason = customer.reason;
+    const reasonData = failureReasonsData.find((r) => r.reason === reason);
+    if (reasonData) reasonData.count++;
+
+    if (customer.payment_currency === "USD" || customer.received_currency === "USD") {
+      usdTransactionCount++;
+    }
+
+    const location = customer.country || "Unknown";
+    const formattedLocation = location.charAt(0).toUpperCase() + location.slice(1);
+    if (!failedLocations[formattedLocation]) {
+      failedLocations[formattedLocation] = 0;
+    }
+    failedLocations[formattedLocation]++;
+  });
+
+  const mostFailedLocation = Object.entries(failedLocations).sort((a, b) => b[1] - a[1])[0];
+
+  const deviceData = [
+    { type: "iOS", count: 0 },
+    { type: "Android", count: 0 },
+  ];
+
+  [...passedCustomers, ...failedCustomers].forEach((transaction) => {
+    const device = transaction.device_os;
+    const deviceInfo = deviceData.find((d) => d.type === device);
+    if (deviceInfo) deviceInfo.count++;
+  });
+
+  const currencyData: { currency: string; count: number }[] = [];
+
+  [...passedCustomers, ...failedCustomers].forEach((transaction) => {
+    const paymentCurrency = transaction.payment_currency;
+    const receivedCurrency = transaction.received_currency;
+
+    let currencyInfo = currencyData.find((c) => c.currency === paymentCurrency);
+    if (!currencyInfo) {
+      currencyInfo = { currency: paymentCurrency, count: 0 };
+      currencyData.push(currencyInfo);
+    }
+    currencyInfo.count++;
+
+    currencyInfo = currencyData.find((c) => c.currency === receivedCurrency);
+    if (!currencyInfo) {
+      currencyInfo = { currency: receivedCurrency, count: 0 };
+      currencyData.push(currencyInfo);
+    }
+    currencyInfo.count++;
+  });
+
+  const dailyData: { [key: string]: number } = {};
+
+  [...passedCustomers, ...failedCustomers].forEach((transaction) => {
+    const date = transaction.date;
+    if (!dailyData[date]) dailyData[date] = 0;
+    dailyData[date]++;
+  });
+
   return (
     <RootTemplate>
       <div className="p-6">
         <Title level={2} className="mb-4">
           Insights Dashboard
         </Title>
+
         <Row gutter={16}>
           <Col span={12}>
             <Card title="Transaction Status Distribution" className="mb-4">
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={350}>
                 <PieChart>
                   <Pie
                     data={pieData}
                     dataKey="value"
                     nameKey="name"
-                    outerRadius={80}
-                    labelLine={true}
-                    label={(entry) => `${entry.name}: ${entry.value}`}
+                    outerRadius={120}
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}`}
                   >
                     {pieData.map((_, index) => (
                       <Cell
@@ -187,64 +204,28 @@ export default function InsightsPage() {
                       />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#f5f5f5",
+                      border: "none",
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </Card>
           </Col>
-          <Col span={12}>
-            <Card title="Income Range Analysis" className="mb-4">
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={incomeRanges}>
-                  <XAxis dataKey="range" />
-                  <YAxis />
-                  <Tooltip />
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Bar dataKey="countPassed" fill="#4CAF50" />
-                  <Bar dataKey="countFailed" fill="#F44336" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
-        <Row gutter={16} className="mt-4">
-          <Col span={24}>
-            <Card title="Verified vs Unverified Income">
-              <ResponsiveContainer width="100%" height={400}>
-                <ScatterChart>
-                  <XAxis dataKey="income" name="Income" />
-                  <YAxis
-                    dataKey="verified"
-                    name="Verified (1) / Unverified (0)"
-                  />
-                  <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-                  <Scatter data={scatterData} fill="#8884d8" />
-                </ScatterChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
-        <Row gutter={16} className="mt-4">
-          <Col span={12}>
-            <Card title="Credit Risk Score Distribution" className="mb-4">
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={creditRiskScores}>
-                  <XAxis dataKey="score" />
-                  <YAxis />
-                  <Tooltip />
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Bar dataKey="status" fill="#8884d8" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
+
           <Col span={12}>
             <Card title="Employment Status Distribution" className="mb-4">
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={employmentStatusData}>
                   <XAxis dataKey="status" />
-                  <YAxis />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#f5f5f5",
+                      border: "none",
+                    }}
+                  />
                   <CartesianGrid strokeDasharray="3 3" />
                   <Bar dataKey="passed" fill="#4CAF50" />
                   <Bar dataKey="failed" fill="#F44336" />
@@ -253,49 +234,112 @@ export default function InsightsPage() {
             </Card>
           </Col>
         </Row>
+
         <Row gutter={16} className="mt-4">
           <Col span={12}>
-            <Card title="Transaction Count by Month" className="mb-4">
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={transactionByMonth}>
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
+            <Card title="Payment Type Distribution" className="mb-4">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={paymentTypeData}>
+                  <XAxis dataKey="type" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#f5f5f5",
+                      border: "none",
+                    }}
+                  />
                   <CartesianGrid strokeDasharray="3 3" />
-                  <Line type="monotone" dataKey="passed" stroke="#4CAF50" />
-                  <Line type="monotone" dataKey="failed" stroke="#F44336" />
+                  <Bar dataKey="passed" fill="#4CAF50" />
+                  <Bar dataKey="failed" fill="#F44336" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+
+          <Col span={12}>
+            <Card title="Device Distribution" className="mb-4">
+              <ResponsiveContainer width="100%" height={350}>
+                <PieChart>
+                  <Pie
+                    data={deviceData}
+                    dataKey="count"
+                    nameKey="type"
+                    outerRadius={120}
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {deviceData.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={["#4285F4", "#34A853"][index]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#f5f5f5",
+                      border: "none",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={16} className="mt-4">
+          <Col span={12}>
+            <Card title="Most Common Cause of Failure" className="mb-4">
+              <p>
+                {
+                  failureReasonsData.sort((a, b) => b.count - a.count)[0]
+                    ?.reason || "Unknown"
+                }
+              </p>
+              <p>
+                Total Count:{" "}
+                {failureReasonsData.reduce((sum, item) => sum + item.count, 0)}
+              </p>
+            </Card>
+          </Col>
+
+          <Col span={12}>
+            <Card title="USD Transactions Count" className="mb-4">
+              <p>Total USD Transactions: {usdTransactionCount}</p>
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={16} className="mt-4">
+          <Col span={12}>
+            <Card title="Location with Most Failed Transactions" className="mb-4">
+              <p>{mostFailedLocation ? mostFailedLocation[0] : 'Unknown'}</p>
+              <p>Total Failures: {mostFailedLocation ? mostFailedLocation[1] : 0}</p>
+            </Card>
+          </Col>
+
+          <Col span={12}>
+            <Card title="Daily Transaction Overview" className="mb-4">
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={Object.entries(dailyData).map(([date, count]) => ({ date, count }))}>
+                  <XAxis dataKey="date" />
+                  <Tooltip contentStyle={{ backgroundColor: "#f5f5f5", border: "none" }} />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <Line type="monotone" dataKey="count" stroke="#8884d8" />
                 </LineChart>
               </ResponsiveContainer>
             </Card>
           </Col>
-          <Col span={12}>
-            <Card title="Payment Type Distribution" className="mb-4">
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={paymentTypeData}>
-                  <XAxis dataKey="type" />
-                  <YAxis />
-                  <Tooltip />
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Bar dataKey="passed" fill="#4CAF50" />
-                  <Bar dataKey="failed" fill="#F44336" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
         </Row>
+
         <div className="mt-4">
           <Title level={4}>Most Recent Transactions</Title>
           <Table
             columns={[
-              {
-                title: "Transaction ID",
-                dataIndex: "transactionId",
-                key: "transactionId",
-              },
+              { title: "Transaction ID", dataIndex: "transactionId", key: "transactionId" },
               { title: "Status", dataIndex: "status", key: "status" },
               { title: "Timestamp", dataIndex: "timestamp", key: "timestamp" },
             ]}
-            dataSource={transactionDetails} // Display recent transactions
+            dataSource={transactionDetails}
             pagination={false}
           />
         </div>
