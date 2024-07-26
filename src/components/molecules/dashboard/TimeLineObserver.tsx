@@ -9,7 +9,7 @@ interface ISocketMessage {
   totalTransactionsAccepted: number;
   totalTransactionsRejected: number;
   percentageOfTransactionsProcessed: number;
-  currentProcess: string; // Assuming this is part of the response
+  currentProcess: string; 
 }
 
 const TimeLineObserver = ({
@@ -17,13 +17,17 @@ const TimeLineObserver = ({
   currentProcess
 }: ISocketMessage) => {
 
+  const processSteps = ["black_list", "rules_engine", "ai_model"];
+
+  const isStepCompleted = (step: string) => {
+    const currentIndex = processSteps.indexOf(currentProcess);
+    return processSteps.indexOf(step) < currentIndex;
+  };
+
   const getDot = (processName: string) => {
     if (currentProcess === processName) {
       return <LoadingOutlined />;
-    } else if (
-      (processName === "black_list" && currentProcess !== "black_list") ||
-      (processName === "rules_engine" && (currentProcess === "rules_engine" || currentProcess === "ai_prediction"))
-    ) {
+    } else if (isStepCompleted(processName)) {
       return <CheckCircleOutlined style={{ color: "green" }} />;
     }
     return null;
@@ -37,7 +41,7 @@ const TimeLineObserver = ({
       <Timeline>
         <Timeline.Item
           dot={getDot("black_list")}
-          color={currentProcess === "black_list" ? "blue" : "gray"}
+          color={currentProcess === "black_list" ? "blue" : isStepCompleted("black_list") ? "green" : "gray"}
         >
           Checking Reputation List
           <p className="text-xs text-gray-500">
@@ -47,7 +51,7 @@ const TimeLineObserver = ({
         </Timeline.Item>
         <Timeline.Item
           dot={getDot("rules_engine")}
-          color={currentProcess === "rules_engine" ? "blue" : currentProcess === "ai_prediction" ? "green" : "gray"}
+          color={currentProcess === "rules_engine" ? "blue" : currentProcess === "ai_model" ? "green" : isStepCompleted("rules_engine") ? "green" : "gray"}
         >
           Rules Engine Weight Calculation
           <p className="text-xs text-gray-500">
@@ -56,8 +60,8 @@ const TimeLineObserver = ({
           </p>
         </Timeline.Item>
         <Timeline.Item
-          dot={currentProcess === "ai_model" ? <LoadingOutlined /> : currentProcess === "completed" ? <CheckCircleOutlined style={{ color: "green" }} /> : null}
-          color={currentProcess === "ai_model" ? "blue" : currentProcess === "completed" ? "green" : "gray"}
+          dot={getDot("ai_model")}
+          color={currentProcess === "ai_model" ? "blue" : currentProcess === "completed" ? "green" : isStepCompleted("ai_model") ? "green" : "gray"}
         >
           Prediction via AI
           <p className="text-xs text-gray-500">
