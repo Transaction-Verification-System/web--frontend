@@ -2,6 +2,7 @@ import App from "@/App";
 import LoginPage from "@/components/pages/auth/LoginPage";
 import RegisterPage from "@/components/pages/auth/RegisterPage";
 import DashboardPage from "@/components/pages/dashboard/DashboardPage";
+import GeoPage from "@/components/pages/geo/GeoPage";
 import InsightsPage from "@/components/pages/insights/InsightsPage";
 import TransactionsDetailsPage from "@/components/pages/transactions/details/TransactionsDetailsPage";
 import FailedTransactionsPage from "@/components/pages/transactions/FailedTransactionsPage";
@@ -75,6 +76,14 @@ const routes: RouteObject[] = [
       </AuthProvider>
     ),
   },
+  {
+    path: "/geologs",
+    element: (
+      <AuthProvider>
+        <GeoPage/>
+      </AuthProvider>
+    )
+  }
 ];
 
 export const router = createBrowserRouter(routes);
