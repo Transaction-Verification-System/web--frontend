@@ -74,10 +74,8 @@ export default function PassedTransactionsDetailsPage() {
       onOk: async () => {
         setIsSubmitting(true);
         try {
-          makeTransactionPassed();
-
+          await makeTransactionPassed();
           navigate(`/logs/passed-transactions/${id}`);
-          window.location.reload();
         } catch (err) {
           console.error("Error updating transaction:", err);
         } finally {
